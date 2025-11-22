@@ -1,0 +1,3280 @@
+id,language,problem_id,code
+s752993784,Python,unknown,"s = list(input())
+mods = [0]*(len(s))
+countRemainder = [0] * 2019
+cnt = 0
+
+
+m = 1
+mod = 0
+for i in range(len(s)):
+    mod += int(s[len(s) - i - 1]) * m
+
+    mod %= 2019
+    m *= 10
+    m %= 2019
+
+    countRemainder[mod] += 1
+
+countRemainder[0] += 1
+
+for i in range(2019):
+    cnt += int(countRemainder[i] * (countRemainder[i] - 1) / 2)
+
+print(cnt)
+"
+s199418121,Python,unknown,"A, B = input().split()
+A = int(A)
+B = int(B.replace(""."", """"))
+print(A * B // 100)
+"
+s537584449,Python,unknown,"a = int(input())
+
+
+def func(a):
+    digits = []
+    temp = a
+    while temp != 0:
+        digits.append(temp % 10)
+        temp = int(temp/10)
+    result = sum(digits)
+    if result == 1:
+        print('10')
+    else:
+        print(result)
+
+
+func(a)
+"
+s043545989,Python,unknown,"import collections
+N = int(input())
+a = list(map(int, input().split()))
+B = collections.Counter(a)
+k = list(B.keys())
+v = list(B.values())
+
+if len(B) == 3 and k[0] ^ k[1] ^ k[2] == 0 and v[0] == v[1] == v[2]:
+    print(""Yes"")
+elif len(B) == 2 and 0 in k and (v[0] == 2*v[1] or v[1] == 2*v[0]):
+    print(""Yes"")
+elif len(B) == 1 and 0 in k:
+    print(""Yes"")
+else:
+    print(""No"")
+"
+s609392609,Python,unknown,"n = int(input())
+t = list(map(int, input().split()))
+m = int(input())
+for i in range(m):
+    p, x = map(int, input().split())
+    s = 0
+    for j in range(len(t)):
+        if j == p-1:
+            s += x
+        else:
+            s += t[j]
+    print(s)
+"
+s310981504,Python,unknown,"a, b = map(int, input().split())
+
+if a <= b:
+    print(a)
+else:
+    print(a-1)
+"
+s419623944,Python,unknown,"N, R = map(int, input().split())
+if N >= 10:
+    print(R)
+else:
+    print(R+100*(10-N))
+"
+s546174362,Python,unknown,"N, M = map(int, input().split())
+*A, = map(int, input().split())
+A = sorted(A)
+
+while M:
+    A[-1] //= 2
+    M -= 1
+    i = -2
+    while M and (-N <= i and A[i] >= A[-1]):
+        A[i] //= 2
+        M -= 1
+        i -= 1
+    A.sort()
+
+print(sum(A))
+"
+s908812767,Python,unknown,"import sys
+sys.setrecursionlimit(100000)
+
+
+def dfs(i):
+    for v, w in V.get(i, []):
+        if (w % 2) == 0:
+            if color[v] == -1:
+                color[v] = color[i]
+            elif color[v] == color[i]:
+                continue
+            elif color[v] != color[i]:
+                return False
+        else:
+            if color[v] == -1:
+                color[v] = 0 if color[i] else 1
+            elif color[v] == color[i]:
+                return False
+            elif color[v] != color[i]:
+                continue
+        dfs(v)
+    return True
+
+
+if __name__ == '__main__':
+    n = int(input())
+    V = {}
+    color = {}
+    for i in range(1, n):
+        u, v, w = map(int, input().split())
+        if not V.get(u, False):
+            V[u] = [[v, w]]
+        else:
+            V[u].append([v, w])
+
+        if not V.get(v, False):
+            V[v] = [[u, w]]
+        else:
+            V[v].append([u, w])
+
+    for i in range(1, n+1):
+        color[i] = -1
+
+    while True:
+        i = 0
+        for j in range(1, n+1):
+            if color[j] == -1:
+                i = j
+                color[i] = 0
+                break
+        if i == 0:
+            for j in range(1, n+1):
+                print(color[j])
+            break
+        else:
+            if not dfs(i):
+                print('No')
+                break
+"
+s251858505,Python,unknown,"print(sum(map(lambda x, y: x == y, input(), input())))
+"
+s504709360,Python,unknown,"s = input()
+if len(s) < 26:
+    for i in range(26):
+        c = chr(ord(""a"")+i)
+        if c not in s:
+            print(s+c)
+            exit()
+else:
+    for i in reversed(range(1, 26)):
+        if s[i-1] < s[i]:
+            s1 = s[0:i-1]
+            for j in range(26):
+                c = chr(ord(""a"")+j)
+                if c > s[i-1] and c not in s1:
+                    print(s1+c)
+                    exit()
+    print(-1)
+"
+s785944322,Python,unknown,"import sys
+input = sys.stdin.readline
+
+a, b = map(int, input().split())
+
+if a >= 13:
+    print(b)
+elif a >= 6:
+    print(int(b/2))
+else:
+    print(0)
+"
+s170274782,Python,unknown,"N = int(input())
+A = []
+for _ in range(2):
+    s = list(map(int, input().split()))
+    A.append(s)
+
+
+ans = []
+
+count = 0
+for i in range(N):
+    baselis = A[0]
+    groundlis = A[1]
+    count = 0
+    count = count + sum(baselis[0:i+1]) + sum(groundlis[i:N+1])
+    ans.append(count)
+
+print(max(ans))
+"
+s662673721,Python,unknown,"import sys
+input = sys.stdin.readline
+
+n = int(input())
+
+ans = 10 ** 18
+
+for i in range(1, int(n ** (1 / 2)) + 2):
+    if n % i != 0:
+        continue
+    j = n // i
+    ans = min(ans, i + j - 2)
+
+print(ans)
+"
+s539244923,Python,unknown,"n, k = map(int, input().split())
+print(n+k if k % n == 0 else k-n)
+"
+s790754864,Python,unknown,"import math
+N, K = (int(x) for x in input().split())
+R = N - K
+mod = 10**9 + 7
+
+
+def fact(n, r):
+    return math.factorial(n) // (math.factorial(n - r) * math.factorial(r))
+
+
+for i in range(1, K+1):
+    if N - K + 1 < i:
+        ans = 0
+    else:
+        ans = fact(R+1, i)*fact(K-1, i-1)
+    print(int(ans) % mod)
+"
+s636719275,Python,unknown,"s = input()
+t = input()
+
+
+def check(a, b):
+    s = 0
+    for i, j in zip(a, b):
+        s += i != j
+    return s
+
+
+ans = 10**6
+for i in range(len(s)):
+    a = s[i:]
+    if len(a) >= len(t):
+        ans = min(ans, check(t, a[:len(t)]))
+print(ans)
+"
+s240532461,Python,unknown,"N, L = map(int, input().split())
+aji = []
+for i in range(1, N+1):
+    aji.append(L+i-1)
+if min(aji) >= 0:
+    aji.pop(aji.index(min(aji)))
+elif max(aji) <= 0:
+    aji.pop(aji.index(max(aji)))
+else:
+    aji.pop(aji.index(min(aji, key=abs)))
+print(sum(aji))
+"
+s828550015,Python,unknown,"x, y, a, b, c = map(int, input().split())
+p = sorted([int(i) for i in input().split()], reverse=True)[:x]
+q = sorted([int(i) for i in input().split()], reverse=True)[:y]
+r = sorted([int(i) for i in input().split()], reverse=True)
+pq = sorted(p+q)
+for i in range(min(x+y, a+b, c)):
+    if pq[i] < r[i]:
+        pq[i] = r[i]
+print(sum(pq))
+"
+s225615697,Python,unknown,"n = int(input())
+a = list(map(int, input().split()))
+
+m1 = int(sum([a[i] * ((-1)**i) for i in range(n)]) / 2)
+
+result = str(m1)
+
+m = [None] * n
+m[0] = m1
+for i in range(1, n):
+    m[i] = a[i-1] - m[i-1]
+
+print(' '.join([str(x*2) for x in m]))
+"
+s846046431,Python,unknown,"import sys
+N, M = map(int, sys.stdin.readline().split())
+A = list(map(int, sys.stdin.readline().split()))
+A.sort(reverse=True)
+S = sum(A)
+for a in A[:M]:
+    if a/S - 1/(4*M) < 0:
+        print('No')
+        break
+else:
+    print('Yes')
+"
+s462546732,Python,unknown,"a, b = input().split("" "")
+a = int(a)
+b = int(b)
+if a <= b:
+    print(a)
+else:
+    print(a-1)
+"
+s131946120,Python,unknown,"n = int(input())
+print(len(set([input() for _ in range(n)])))
+"
+s016605598,Python,unknown,"import heapq
+const = 0
+left = []
+right = []
+
+q = int(input())
+cnt = 0
+left_sum = 0
+right_sum = 0
+for _ in range(q):
+    t = list(map(int, input().split()))
+    if t[0] == 1:
+
+        a, b = t[1:]
+        const += b
+        if cnt % 2 == 0:
+            if not right:
+                heapq.heappush(left, -a)
+                left_sum += a
+                cnt += 1
+
+                continue
+
+            c = heapq.heappop(right)
+            right_sum -= c
+            if a <= c:
+                heapq.heappush(left, -a)
+                heapq.heappush(right, c)
+                left_sum += a
+                right_sum += c
+            else:
+                heapq.heappush(left, -c)
+                heapq.heappush(right, a)
+                left_sum += c
+                right_sum += a
+        else:
+            c = heapq.heappop(left)
+            left_sum += c
+            if a <= -c:
+                heapq.heappush(left, -a)
+                heapq.heappush(right, -c)
+                left_sum += a
+                right_sum -= c
+            else:
+                heapq.heappush(left, c)
+                heapq.heappush(right, a)
+                left_sum -= c
+                right_sum += a
+        cnt += 1
+
+    else:
+        tmp = -left[0]
+        print(tmp, const - left_sum + right_sum + tmp * (cnt % 2))
+"
+s441028271,Python,unknown,"(a, b, c, k) = list(map(int, input().split()))
+if k % 2 == 0:
+    print(a-b)
+else:
+    print(b-a)
+"
+s269975433,Python,unknown,"from itertools import combinations_with_replacement
+import sys
+
+
+def LI(): return map(int, sys.stdin.readline().rstrip().split())
+
+
+N, M, Q = LI()
+
+Q_groups = []
+for _ in range(Q):
+    Q_groups.append([*LI()])
+
+max_score = 0
+for p in combinations_with_replacement(range(1, M + 1), r=N):
+    temp_score = 0
+    for q in Q_groups:
+        if p[q[1] - 1] - p[q[0] - 1] == q[2]:
+            temp_score += q[3]
+    max_score = max(max_score, temp_score)
+
+print(max_score)
+"
+s949655009,Python,unknown,"strn = input()
+n = int(strn)
+shichigolist = [""3"", ""5"", ""7""]
+shichigo = [[] for _ in range(len(strn))]
+for i in range(len(strn)):
+    if i == 0:
+        for j in shichigolist:
+            shichigo[i].append(j)
+    else:
+        for j in shichigo[i-1]:
+            for k in shichigolist:
+                shichigo[i].append(j+k)
+target = len(strn)-1
+for i in range(len(strn)):
+    for j in shichigo[i][:]:
+        if i == target:
+            if int(j) > n:
+                shichigo[target].remove(j)
+            elif j.count(""3"") == 0 or j.count(""5"") == 0 or j.count(""7"") == 0:
+                shichigo[target].remove(j)
+        else:
+            if j.count(""3"") == 0 or j.count(""5"") == 0 or j.count(""7"") == 0:
+                shichigo[i].remove(j)
+
+print(sum([len(shichigo[i]) for i in range(len(strn))]))
+"
+s316832655,Python,unknown,"a, b, c = map(int, input().split())
+print(int((a*b)/2))
+"
+s103029464,Python,unknown,"N = int(input())
+A = list(map(int, input().split()))
+B = [0] * N
+
+for i in range(N - 1, -1, -1):
+    tmp_sum = 0
+    for j in range((i + 1) * 2 - 1, N, i + 1):
+        tmp_sum += B[j]
+        tmp_sum %= 2
+    B[i] = tmp_sum ^ A[i]
+
+print(sum(B))
+print(*[i + 1 for i, b in enumerate(B) if b == 1])
+"
+s759547301,Python,unknown,"S = input()
+
+if S == 'Sunny':
+    print('Cloudy')
+
+if S == 'Cloudy':
+    print('Rainy')
+
+if S == 'Rainy':
+    print('Sunny')
+"
+s961772658,Python,unknown,"s = input()
+alphabets = [""a"", ""b"", ""c"", ""d"", ""e"", ""f"", ""g"", ""h"", ""i"", ""j"", ""k"", ""l"",
+             ""m"", ""n"", ""o"", ""p"", ""q"", ""r"", ""s"", ""t"", ""u"", ""v"", ""w"", ""x"", ""y"", ""z""]
+for i in range(len(alphabets)):
+    if alphabets[i] == s:
+        print(alphabets[i+1])
+"
+s018260659,Python,unknown,"N = int(input())
+cnt = 1
+while cnt <= 9:
+    if N % cnt == 0 and 1 <= N/cnt <= 9:
+        print('Yes')
+        break
+    else:
+        cnt += 1
+else:
+    print('No')
+"
+s826716211,Python,unknown,"import copy
+
+
+def solve():
+    S_d = list(input())
+    T = list(input())
+
+    end = len(S_d) - 1
+    first = end - len(T) + 1
+    while first >= 0:
+        t_i = 0
+        for s_i in range(first, end+1):
+            if T[t_i] != S_d[s_i] and S_d[s_i] != '?':
+                break
+            t_i += 1
+        else:
+            break
+
+        first -= 1
+        end -= 1
+
+    else:
+        print('UNRESTORABLE')
+        exit(0)
+
+    ans = copy.deepcopy(S_d)
+    t_i = 0
+    for i in range(first, end+1):
+        ans[i] = T[t_i]
+        t_i += 1
+
+    ans = ''.join(ans).replace('?', 'a')
+    print(ans)
+
+
+if __name__ == '__main__':
+    solve()
+"
+s353603279,Python,unknown,"X = int(input())
+h = X // 500
+a = (X % 500) // 5
+y = h * 1000 + a * 5
+print(y)
+"
+s663509070,Python,unknown,"import math
+N, D = map(int, input().split())
+mat = []
+for d in range(N):
+    mat.append([int(x) for x in input().split()])
+
+c = 0
+for i in range(len(mat)-1):
+    for j in range(i+1, len(mat)):
+        dist = math.sqrt(sum([(x-y)**2 for x, y in zip(mat[i], mat[j])]))
+        if int(dist) == dist:
+            c += 1
+print(c)
+"
+s000375264,Python,unknown,"X, t = map(int, input().split())
+
+if X > t:
+    answer = X - t
+elif X <= t:
+    answer = 0
+
+print(answer)
+"
+s522872163,Python,unknown,"X, A = list(map(int, input().split()))
+if X < A:
+    print(0)
+else:
+    print(10)
+"
+s997947249,Python,unknown,"N, K = map(int, input().split())
+if N % K == 0:
+    print(0)
+else:
+    print(1)
+"
+s451465602,Python,unknown,"n = int(input())
+h = int(n / 3600)
+n %= 3600
+m = int(n / 60)
+n %= 60
+s = int(n)
+print(str(h) + "":"" + str(m) + "":"" + str(s))
+"
+s760938927,Python,unknown,"h, w, ka = map(int, input().split())
+mat = [list(input()) for i in range(h)]
+ans = 0
+for i in range(2**(h+w)):
+    b = bin(i)[2:].zfill(h+w)
+    rs = b[:h]
+    cs = b[h:]
+    ct = 0
+    for l in range(h):
+        for k in range(w):
+            if mat[l][k] == '#' and rs[l] == '0' and cs[k] == '0':
+                ct += 1
+    if ct == ka:
+        ans += 1
+print(ans)
+"
+s621701371,Python,unknown,"s = input()
+q = int(input())
+qs = [input().split() for i in range(q)]
+n = False
+left = right = """"
+for operation in qs:
+    if operation[0] == '1':
+        n = not n
+    if operation[0] == '2':
+        t, f, c = operation
+        f = int(f)
+        if n:
+            f = 1 if f != 1 else 2
+        if f == 1:
+            left = c+left
+        elif f == 2:
+            right += c
+s = left+s+right
+print(s[::-1] if n else s)
+"
+s875904659,Python,unknown,"def bubbleSort(cards):
+    n = len(cards)
+    for i in range(0, n):
+        for j in range(n-1, i, -1):
+            if int(cards[j][1]) < int(cards[j-1][1]):
+                cards[j], cards[j-1] = cards[j-1], cards[j]
+
+    print("" "".join(map(str, cards)))
+
+
+def selectionSort(cards):
+    n = len(cards)
+    for i in range(0, n):
+        mini = i
+        for j in range(i, n):
+            if int(cards[j][1]) < int(cards[mini][1]):
+                mini = j
+        if mini != i:
+            cards[i], cards[mini] = cards[mini], cards[i]
+
+    print("" "".join(map(str, cards)))
+
+
+n = int(input())
+cards = input().split("" "")
+cards2 = list(cards)
+bubbleSort(cards)
+print(""Stable"")
+selectionSort(cards2)
+if "" "".join(map(str, cards2)) == "" "".join(map(str, cards)):
+    print(""Stable"")
+else:
+    print(""Not stable"")
+"
+s706119740,Python,unknown,"candy = sorted(map(int, input().split()))
+print(""Yes"" if candy[0]+candy[1] == candy[2] else ""No"")
+"
+s636592395,Python,unknown,"N = int(input())
+A = list(map(int, input().split()))
+
+
+def main():
+    A.sort()
+    ans = A[-1] - A[0]
+    print(ans)
+
+
+if __name__ == ""__main__"":
+    main()
+"
+s137613418,Python,unknown,"import sys
+import math
+
+from collections import defaultdict
+from collections import deque
+
+
+def load(vtype=int):
+    return vtype(input().strip())
+
+
+def load_list(seplator="" "", vtype=int):
+    return [vtype(v) for v in input().strip().split(seplator)]
+
+
+def exit():
+    import sys
+    sys.exit(0)
+
+
+def perm_sub(li, used):
+    if len(li) == len(used):
+        return [deque()]
+    k = []
+    for i in range(len(li)):
+        if i in used:
+            continue
+        used.add(i)
+        sub_list = perm_sub(li, used)
+        for sub in sub_list:
+            sub.appendleft(li[i])
+        k.extend(sub_list)
+        used.discard(i)
+    return k
+
+
+def perm_li(li):
+    return perm_sub(li, set())
+
+
+def perm_n(n):
+    return perm_sub(list(range(n)), set())
+
+
+def join_i(li, sep=""""):
+    return sep.join([str(e) for e in li])
+
+
+def li2n(li):
+    n, base = 0, 1
+    for i in range(len(li)-1, -1, -1):
+        n += li[i] * base
+        base *= 10
+    return n
+
+
+def sli2ili(li):
+    return [int(s) for s in li]
+
+
+def prime_list(n):
+    li = [i for i in range(2, n+1)]
+    for i in range(len(li)):
+        if li[i] >= int(math.sqrt(n)):
+            break
+        if li[i] == -1:
+            continue
+        for j in range(i+1, len(li)):
+            if li[j] % li[i] == 0:
+                li[j] = -1
+    return [n for n in li if n != -1]
+
+
+def gcd(a, b):
+    a, b = max(a, b), min(a, b)
+    while True:
+        r = a % b
+        if r == 0:
+            return b
+        a, b = b, r
+
+
+def lcm(a, b):
+    return int(a * b / gcd(a, b))
+
+
+def all_subset(li):
+    s = []
+    n = len(li)
+    for bit in range(0, (1 << (n+1))):
+        ss = set()
+        for i in range(0, n):
+            if (bit & (1 << i)):
+                ss.add(li[i])
+        s.append(ss)
+    return s
+
+
+def factorial(n):
+    if n == 1:
+        return 1
+    return n * factorial(n-1)
+
+
+def mCn(m, n):
+    def factorial_ntimes(m, n):
+        r = 1
+        while n:
+            r *= m
+            m -= 1
+            n -= 1
+        return r
+    return int(factorial_ntimes(m, n) / factorial(n))
+
+
+n = load()
+A = load_list()
+
+if n == len(set(A)):
+    print('YES')
+else:
+    print('NO')
+"
+s028530838,Python,unknown,"x = input()
+if x.islower():
+    print(""a"")
+else:
+    print(""A"")
+"
+s273727373,Python,unknown,"N = int(input())
+A = list(map(int, input().split()))
+B = list(A)
+count = 1
+for i in A:
+    B[i-1] = count
+    count += 1
+
+
+print(*B)
+"
+s404600540,Python,unknown,"def main():
+    q, h, s, d = map(int, input().split())
+    n = int(input())
+    min_1 = min(q*4, h*2, q*2+h, s)
+    min_2 = min(min_1*2, d)
+
+    print((n % 2)*min_1 + (n // 2)*min_2)
+
+
+if __name__ == '__main__':
+    main()
+"
+s922746568,Python,unknown,"n = int(input())
+s = input()
+
+r_cnt = s.count('R')
+g_cnt = s.count('G')
+b_cnt = s.count('B')
+
+ans = r_cnt * g_cnt * b_cnt
+
+for i in range(n):
+    for d in range(n):
+        j = i + d
+        k = j + d
+        if k >= n:
+            break
+
+        if s[i] != s[j] and s[j] != s[k] and s[k] != s[i]:
+
+            ans -= 1
+print(ans)
+"
+s267172486,Python,unknown,"h, a = map(int, input().strip().split())
+
+ans = h // a
+ama = h % a
+
+if ama != 0:
+    ans += 1
+print(ans)
+"
+s616346400,Python,unknown,"def atc_079a(input_value: str) -> str:
+    n = 3
+    for i in range(0, len(input_value) + 1 - n):
+        for j in range(1, n):
+            if input_value[i] != input_value[i + j]:
+                break
+            if j == n - 1:
+                return ""Yes""
+    return ""No""
+
+
+input_value = input()
+print(atc_079a(input_value))
+"
+s430322735,Python,unknown,"n = int(input())
+lst = []
+pair = 0
+for i in range(n):
+    st = ''.join(sorted(list(input())))
+    lst.append(st)
+lst = sorted(lst)
+lst += ['end']
+pre = ''
+tmp_cnt = 0
+cnt = 0
+for i in lst:
+    if i == pre:
+        tmp_cnt += 1
+    else:
+        cnt += sum([j for j in range(tmp_cnt + 1)])
+        tmp_cnt = 0
+    pre = i
+print(cnt)
+"
+s761121328,Python,unknown,"N = int(input())
+A = list(map(int, input().split()))
+s = A[0] ^ A[1]
+for i in range(2, N):
+    s = s ^ A[i]
+
+B = [0]*N
+for i in range(N):
+    B[i] = s ^ A[i]
+
+L = [str(a) for a in B]
+L = "" "".join(L)
+print(L)
+"
+s031917494,Python,unknown,"print('Christmas'+' Eve'*abs(int(input())-25))
+"
+s952264435,Python,unknown,"N, M = map(int, input().split())
+A = map(int, input().split())
+A_sum = sum(A)
+
+print(N - A_sum if N - A_sum >= 0 else ""-1"")
+"
+s986062252,Python,unknown,"from sys import stdin
+def il(func=int): return list(map(func, stdin.readline().rstrip().split()))
+
+
+ils = lambda n, s=""int(input())"": [eval(s) for _ in range(n)]
+
+
+def gcd(a, b):
+    if a < b:
+        return gcd(b, a)
+    if b == 0:
+        return a
+    return gcd(b, a % b)
+
+
+def lcm(a, b):
+    return a * b // gcd(a, b)
+
+
+n, m = il()
+s = input()
+t = input()
+aa = gcd(n, m)
+bb = lcm(n, m)
+cc = aa // bb
+for i in range(aa):
+    if s[n//aa*i] != t[m//aa*i]:
+        print(-1)
+        exit()
+print(bb)
+"
+s923405856,Python,unknown,"while True:
+    n = int(input())
+
+    if n == 0:
+        break
+
+    res = -1111111111
+    s = 0
+    for i in range(n):
+        a = int(input())
+        s = max(s + a, a)
+        res = max(s, res)
+
+    print(res)
+"
+s534639230,Python,unknown,"from collections import Counter
+
+
+def solve():
+    N = int(input())
+    D = list(map(int, input().split()))
+
+    mod = 998244353
+
+    if D[0] != 0:
+        print(0)
+        return
+
+    cnt = Counter(D)
+
+    if cnt[0] > 1:
+        print(0)
+        return
+
+    res = 1
+
+    for i in range(1, max(D)+1):
+        if cnt[i-1] == 1:
+            continue
+        res *= cnt[i-1]**cnt[i] % mod
+        res %= mod
+
+    print(res)
+
+
+solve()
+"
+s817205687,Python,unknown,"from functools import reduce
+import math
+
+
+def lcm(x, y):
+    return (x * y) // math.gcd(x, y)
+
+
+def lcm_list(numbers):
+    return reduce(lcm, numbers, 1)
+
+
+N, M = map(int, input().split())
+A = list(map(int, input().split()))
+
+
+A = [a // 2 for a in A]
+
+
+count_div_2 = None
+for a in A:
+    cnt = 0
+    while a % 2 == 0:
+        a //= 2
+        cnt += 1
+
+    if count_div_2 is None:
+        count_div_2 = cnt
+
+    elif cnt != count_div_2:
+        print(0)
+        exit()
+
+
+my_lcm = lcm_list(A)
+if my_lcm > M:
+    print(0)
+    exit()
+
+tmp = M // my_lcm
+
+
+ans = (tmp + 1) // 2
+print(ans)
+"
+s287369394,Python,unknown,"N = int(input())
+A = [int(x) for x in input().split()]
+B = [int(x) for x in input().split()]
+
+ans = 0
+for i in range(N):
+    d = min(A[i], B[i])
+    ans += d
+    A[i] -= d
+    B[i] -= d
+    d = min(A[i + 1], B[i])
+    ans += d
+    A[i + 1] -= d
+    B[i] -= d
+
+print(ans)
+"
+s058944700,Python,unknown,"import numpy as np
+
+n, k = map(int, input().split())
+
+if n > k:
+    tmp = n % k
+    if tmp >= k - tmp:
+        ans = k - tmp
+    else:
+        ans = tmp
+elif n < k:
+    if n >= k - n:
+        ans = k - n
+    else:
+        ans = n
+else:
+    ans = 0
+
+print(ans)
+"
+s185068963,Python,unknown,"a, b, c = map(int, input().split())
+print(""Yes"" if a + b >= c else ""No"")
+"
+s764169243,Python,unknown,"import sys
+input = sys.stdin.buffer.readline
+
+
+def main():
+
+    class SegmentTree:
+
+        def __init__(self, size, default):
+            self.size = 2**(size-1).bit_length()
+            self.default = default
+            self.seg = [default]*(2*self.size-1)
+
+        def segfunc(self, x, y):
+            return max(x, y)
+
+        def update(self, k, x):
+            k += self.size-1
+            self.seg[k] = x
+            while k:
+                k = (k-1)//2
+                self.seg[k] = self.segfunc(self.seg[2*k+1], self.seg[2*k+2])
+
+        def query(self, p, q):
+            if q <= p:
+                return self.default
+            p += self.size-1
+            q += self.size-2
+            ret = self.default
+            while q-p > 1:
+                if p & 1 == 0:
+                    ret = self.segfunc(ret, self.seg[p])
+                if q & 1 == 1:
+                    ret = self.segfunc(ret, self.seg[q])
+                    q -= 1
+                p = p//2
+                q = (q-1)//2
+            ret = self.segfunc(self.segfunc(ret, self.seg[p]), self.seg[q])
+            return ret
+
+        def seg_print(self):
+            print(self.seg)
+
+    N = int(input())
+    a = list(map(int, input().split()))
+    ans = [i+1 for i in range(N)]
+    left_seg = SegmentTree(N, 0)
+    for i, num in enumerate(a):
+        ans[num-1] *= i + 1 - left_seg.query(0, num)
+        left_seg.update(num-1, i+1)
+    right_seg = SegmentTree(N, 0)
+    for i, num in enumerate(a[::-1]):
+        ans[num-1] *= i + 1 - right_seg.query(0, num)
+        right_seg.update(num-1, i+1)
+
+    print(sum(ans))
+
+
+if __name__ == ""__main__"":
+    main()
+"
+s768331281,Python,unknown,"N, L = map(int, input().split())
+S = [input().rstrip() for _ in range(N)]
+print(''.join(sorted(S)))
+"
+s993625131,Python,unknown,"S = list(input())
+
+count = 0
+record = 0
+for i in range(len(S)):
+    if S[i] == ""A"" or S[i] == ""C"" or S[i] == ""G"" or S[i] == ""T"":
+        count += 1
+    else:
+        if count > record:
+            record = count
+        count = 0
+if count > record:
+    record = count
+
+print(record)
+"
+s315467749,Python,unknown,"n = int(input())
+S = list(map(int, input().split()))
+q = int(input())
+T = list(map(int, input().split()))
+
+ans = 0
+for i in T:
+    if i == S[-1] or i == S[0]:
+        ans += 1
+    else:
+        left = 0
+        right = n-1
+        while right-left > 1:
+            mid = (left+right)//2
+            if S[mid] == i:
+                ans += 1
+                break
+            elif S[mid] < i:
+                left = mid
+            else:
+                right = mid
+
+print(ans)
+"
+s060838372,Python,unknown,"N, K = map(int, input().split())
+S = list(input())
+if S[K-1] == ""A"":
+    S[K-1] = ""a""
+elif S[K-1] == ""B"":
+    S[K-1] = ""b""
+else:
+    S[K-1] = ""c""
+ans = """".join(S)
+print(ans)
+"
+s695100304,Python,unknown,"n = int(input())
+x = list(map(int, input().split()))
+x.reverse()
+print(*x)
+"
+s831456551,Python,unknown,"A, B = map(int, input().split())
+print(A*B)
+"
+s951065247,Python,unknown,"N, A, B, C = map(int, input().split())
+l = [int(input()) for i in range(N)]
+
+
+def dfs(cur, a, b, c):
+    if cur == N:
+        return abs(A - a) + abs(B - b) + abs(C - c) - 30 if min(a, b, c) > 0 else 10 ** 9
+    no_add = dfs(cur + 1, a, b, c)
+    add_a = dfs(cur + 1, a + l[cur], b, c) + 10
+    add_b = dfs(cur + 1, a, b + l[cur], c) + 10
+    add_c = dfs(cur + 1, a, b, c + l[cur]) + 10
+
+    return min(no_add, add_a, add_b, add_c)
+
+
+print(dfs(0, 0, 0, 0))
+"
+s542358243,Python,unknown,"N = int(input())
+
+if N % 9 == 0:
+    print('Yes')
+else:
+    print('No')
+"
+s031459110,Python,unknown,"N = int(input())
+c = input()
+
+num_w = c.count(""W"")
+num_r = N - num_w
+
+comp = ""R""*num_r + ""W""*num_w
+ans = 0
+for i in range(num_r):
+    if c[i] != comp[i]:
+        ans += 1
+
+ans = min(num_w, num_r, ans)
+print(ans)
+"
+s681105182,Python,unknown,"import sys
+sys.setrecursionlimit(10**7)
+def LI(): return [int(x) for x in sys.stdin.readline().split()]
+def LI_(): return [int(x) - 1 for x in sys.stdin.readline().split()]
+def LF(): return [float(x) for x in sys.stdin.readline().split()]
+def LS(): return sys.stdin.readline().split()
+def II(): return int(sys.stdin.readline())
+def SI(): return sys.stdin.readline().strip()
+
+
+INF = 10 ** 18
+MOD = 10 ** 9 + 7
+
+
+def main():
+    N = II()
+    a_li = LI()
+
+    a_li.sort()
+
+    n = a_li[-1]
+
+    dif = INF
+    prev_dif = dif
+    for a in a_li[:-1]:
+        dif = min(abs(n/2 - a), dif)
+        if dif != prev_dif:
+            r = a
+            prev_dif = dif
+
+    print(n, r)
+
+
+main()
+"
+s838619850,Python,unknown,"S = input()
+T = input()
+
+N = len(S)
+M = len(T)
+ans = M
+for i in range(N-M+1):
+    S_2 = S[i:i+M]
+    cnt = 0
+    for j in range(M):
+        if T[j] != S_2[j]:
+            cnt += 1
+    ans = min(ans, cnt)
+
+print(ans)
+"
+s087080706,Python,unknown,"from bisect import bisect
+n, m, x = (int(i) for i in input().split())
+a = [int(i) for i in input().split()]
+ans = 0
+i = bisect(a, x)
+print(min(len(a[:i]), len(a[i:])))
+"
+s733189960,Python,unknown,"def main():
+    n = int(input())
+    sdic = {}
+    for _ in range(n):
+        s = [_s for _s in sorted(input().strip())]
+        s = ''.join(s)
+        if s in sdic:
+            sdic[s] += 1
+        else:
+            sdic[s] = 1
+    ans = 0
+    for k, v in sdic.items():
+        ans += v*(v-1)//2
+    print(ans)
+
+
+if __name__ == '__main__':
+    main()
+"
+s855969677,Python,unknown,"s = input()
+
+if s == 'RRR':
+    print(3)
+elif s == 'SSS':
+    print(0)
+elif s == 'RRS' or s == 'SRR':
+    print(2)
+else:
+    print(1)
+"
+s238775098,Python,unknown,"n = int(input())
+res = 0
+for _ in range(n):
+    x, u = list(input().split())
+    if u == ""BTC"":
+        res += float(x) * 380000
+    else:
+        res += int(x)
+print(res)
+"
+s101447419,Python,unknown,"import collections
+
+
+def main():
+    n = int(input())
+    v = list(map(int, input().split()))
+    ve = []
+    vo = []
+    for i in range(n//2):
+        ve.append(v[2*i])
+        vo.append(v[2*i+1])
+    ce = collections.Counter(ve)
+    co = collections.Counter(vo)
+    ans = n
+    if ce.most_common()[0][0] != co.most_common()[0][0]:
+        ans = n-ce.most_common()[0][1]-co.most_common()[0][1]
+    elif len(ce) == 1 and len(co) == 1:
+        ans = n-ce.most_common()[0][1]
+    elif len(ce) == 1:
+        ans = n-ce.most_common()[0][1]-co.most_common()[1][1]
+    elif len(co) == 1:
+        ans = n-ce.most_common()[1][1]-co.most_common()[0][1]
+    else:
+        ans = min(n-ce.most_common()[0][1]-co.most_common()[1]
+                  [1], n-ce.most_common()[1][1]-co.most_common()[0][1])
+    print(ans)
+
+
+if __name__ == ""__main__"":
+    main()
+"
+s060251920,Python,unknown,"def main():
+    a, b = map(int, input().split())
+    print(a*b)
+
+
+main()
+"
+s960572618,Python,unknown,"a, b, c = input().strip().split()
+
+if a == b and b == c:
+    print(""Yes"")
+else:
+    print(""No"")
+"
+s091400419,Python,unknown,"a, b = map(int, input().split())
+lst = [a+b, a-b, a*b]
+print(max(lst))
+"
+s764356857,Python,unknown,"A, B = map(int, input().split())
+
+min = B * 10
+max = (B+1) * 10 - 1
+
+ans = -1
+for i in range(min, max+1):
+    if int(i * 0.08) == A:
+        ans = i
+        break
+
+print(ans)
+"
+s280552889,Python,unknown,"N = int(input())
+if N % 2 == 0:
+    print(N//2)
+else:
+    print(N//2+1)
+"
+s827462150,Python,unknown,"import numpy as np
+n = int(input())
+A = np.zeros(n)
+
+x, y, z = 1, 1, 1
+
+while x**2 + y**2 + z**2 + x*y + y*z + z*x <= n:
+    while x ** 2 + y ** 2 + z ** 2 + x * y + y * z + z * x <= n:
+        while x ** 2 + y ** 2 + z ** 2 + x * y + y * z + z * x <= n:
+            i = x ** 2 + y ** 2 + z ** 2 + x * y + y * z + z * x
+            A[i - 1] += 1
+            z += 1
+        z = 1
+        y += 1
+    y, z = 1, 1
+    x += 1
+for i in range(n):
+    print(int(A[i]))
+"
+s225521100,Python,unknown,"N, K = map(int, input().split())
+A = []
+
+for i in range(N):
+    A.append(0)
+
+for i in range(K):
+    d = int(input())
+    AA = list(map(int, input().split()))
+    for j in range(d):
+        A[AA[j] - 1] = 1
+
+n = 0
+for i in range(N):
+    if A[i] == 0:
+        n += 1
+print(n)
+"
+s683277023,Python,unknown,"n, k = map(int, input().split())
+li = list(map(int, input().split()))
+li.sort()
+tmp = li[:k]
+print(sum(tmp))
+"
+s208095748,Python,unknown,"A, B, C = map(int, input().split())
+if B < C:
+    print(0)
+elif A * C < B:
+    print(C)
+else:
+    print(B//A)
+"
+s500828884,Python,unknown,"n, a, b = map(int, input().split())
+print(min(n * a, b))
+"
+s975943078,Python,unknown,"import sys
+from bisect import bisect_left
+
+
+def solve():
+    input = sys.stdin.readline
+    N, K = map(int, input().split())
+    A = [(int(a) % K) - 1 for a in input().split()]
+    sum_A = [0 for _ in range(N + 1)]
+
+    count = 0
+    modK = dict()
+    modK[0] = [0]
+    for i in range(N):
+        sum_A[i + 1] = (sum_A[i] + A[i]) % K
+        if sum_A[i+1] not in modK:
+            modK[sum_A[i+1]] = [i + 1]
+        else:
+            modK[sum_A[i+1]].append(i+1)
+
+    for key in modK:
+        lenK = len(modK[key])
+        for i, a in enumerate(modK[key]):
+            count += bisect_left(modK[key], a + K, i, lenK) - i - 1
+
+    print(count)
+    return 0
+
+
+if __name__ == ""__main__"":
+    solve()
+"
+s205112814,Python,unknown,"n, m = map(int, input().split())
+
+gate_cond = [[int(x) for x in input().split()] for _ in range(m)]
+max_under_th = max([l[0] for l in gate_cond])
+min_upper_th = min([l[1] for l in gate_cond])
+if min_upper_th - max_under_th >= 0:
+    print(min_upper_th - max_under_th + 1)
+else:
+    print(0)
+"
+s214672212,Python,unknown,"nums = list(map(int, input().split("" "")))
+nums.sort(reverse=True)
+print(nums[0]*10+nums[1]+nums[2])
+"
+s197514717,Python,unknown,"ABC = list(map(int, input().split()))
+
+A = ABC[0]
+B = ABC[1]
+C = ABC[2]
+
+print(max([10*A+B+C, 10*B+C+A, 10*C+A+B]))
+"
+s267613210,Python,unknown,"import sys
+def input(): return sys.stdin.readline().rstrip()
+def input_nums(): return list(map(int, input().split()))
+
+
+def main():
+    K, N = input_nums()
+    A = input_nums()
+    dist = []
+    for i in range(len(A)-1):
+        dist.append(A[i+1]-A[i])
+    dist.append(K+A[0]-A[-1])
+    maxv = max(dist)
+    print(sum(dist) - maxv)
+
+
+if __name__ == '__main__':
+    main()
+"
+s813548165,Python,unknown,"N = int(input())
+S, T = input().split()
+
+char_lists = []
+
+for i, char in enumerate(S):
+    char_lists.append(char)
+    char_lists.append(T[i])
+
+print("""".join(char_lists))
+"
+s869207096,Python,unknown,"n = int(input())
+s = input()
+cnt = 1
+for i in range(n-1):
+    if s[i] == s[i+1]:
+        continue
+
+    else:
+        cnt += 1
+
+print(cnt)
+"
+s025428739,Python,unknown,"A, B = map(int, input().split())
+lst = []
+lst.append(A+B)
+lst.append(A-B)
+lst.append(A*B)
+print(max(lst))
+"
+s491954463,Python,unknown,"n, m = list(map(int, input().split()))
+a = []
+b = []
+for i in range(m):
+    a1, b1 = list(map(int, input().split()))
+    a.append(a1)
+    b.append(b1)
+
+for i in range(1, n+1):
+    print(a.count(i)+b.count(i))
+"
+s575946485,Python,unknown,"a = [int(input()) for i in range(5)]
+
+dic = {}
+
+for i in range(5):
+    if str(a[i])[-1] == ""0"":
+        dic.update({i: 0})
+    else:
+        dic.update({i: int(str(a[i])[-1]) - 10})
+
+
+min_num = [i for i in dic if dic[i] == min(dic.values())][0]
+a_sum = sum(a)
+dic.pop(min_num)
+print(abs(sum(dic.values())) + a_sum)
+"
+s747093551,Python,unknown,"N, M, X, Y = map(int, input().split())
+x = list(map(int, input().split()))
+y = list(map(int, input().split()))
+print('No War' if max(max(x), X) < min(min(y), Y) else 'War')
+"
+s814885508,Python,unknown,"def main():
+    X, K, D = map(int, input().split())
+
+    r = X // D
+    if abs(r) > K:
+        print(abs(X) - K * D)
+        exit()
+    a = X - r * D
+    if (K - r) % 2 == 0:
+        print(a)
+    else:
+        print(abs(D - a))
+
+
+if __name__ == '__main__':
+    main()
+"
+s704354119,Python,unknown,"n = int(input())
+l = input().split()
+max = -1e9
+min = 1e9
+sum = 0
+for i in range(n):
+    sum += int(l[i])
+    if max < int(l[i]):
+        max = int(l[i])
+    if min > int(l[i]):
+        min = int(l[i])
+print(min, max, sum)
+"
+s043174379,Python,unknown,"H, W = map(int, input().split())
+h, w = map(int, input().split())
+ans = H * W - (h * W + w * H - h * w)
+print(ans)
+"
+s246930871,Python,unknown,"N, A, B = map(int, input().split())
+ans = A * (N//(A+B)) + min(A, N % (A+B))
+print(ans)
+"
+s357377130,Python,unknown,"A, B, K = map(int, input().split())
+if A+K-1 >= B-K+1:
+    while A <= B:
+        print(A)
+        A += 1
+else:
+    i = 0
+    while i <= K-1:
+        print(A+i)
+        i += 1
+    while B-K+1 <= B:
+        print(B-K+1)
+        K -= 1
+"
+s708549466,Python,unknown,"N, x = map(int, input().split())
+a = list(map(int, input().split()))
+cnt = 0
+for i in range(1, N):
+    tmp = a[i - 1] + a[i]
+    if tmp > x:
+        if tmp - x > a[i]:
+            a[i - 1] = tmp - a[i] - x
+            a[i] = 0
+        else:
+            a[i] = a[i] - (tmp - x)
+        cnt += tmp - x
+
+print(cnt)
+"
+s122565091,Python,unknown,"a, v = map(int, input().split())
+b, w = map(int, input().split())
+t = int(input())
+if a == b:
+    print('YES')
+elif v <= w:
+    print('NO')
+else:
+    if t < abs(a - b) / (v - w):
+        print('NO')
+    else:
+        print('YES')
+"
+s735480710,Python,unknown,"from collections import deque
+n = int(input())
+a = list(map(str, input().split()))
+b = []
+
+b = a[1::2][::-1]+a[::2]
+if len(a) % 2 == 0:
+    print(' '.join(b))
+else:
+    print(' '.join(b[::-1]))
+"
+s622795537,Python,unknown,"n = int(input())
+arr = {}
+
+for i in range(n):
+    s = input()
+    if not s in arr:
+        arr[s] = 1
+    else:
+        arr[s] += 1
+
+max_count = max(arr.values())
+dic = [key[0] for key in arr.items() if key[1] == max_count]
+
+out_sort = sorted(dic)
+for i in out_sort:
+    print(i)
+"
+s232279435,Python,unknown,"n = int(input())
+s = str(input())
+
+ans = 0
+
+for i in range(n):
+    x = set(s[:i+1])
+    y = set(s[i+1:])
+
+    z = 0
+    for w in x:
+        if w in y:
+            z += 1
+    if z > ans:
+        ans = z
+print(ans)
+"
+s195311365,Python,unknown,"s = input()
+
+if len(s) == 2:
+    print(s)
+else:
+    print(s[::-1])
+"
+s840967243,Python,unknown,"import math
+MOD = 10**9+7
+f = math.factorial
+n, m = sorted(map(int, input().split()))
+print(max(2 - m + n, 0)*f(n)*f(m) % MOD)
+"
+s067092519,Python,unknown,"N = int(input())
+m = []
+line = ''
+m = [[[0 for k in range(10)] for j in range(3)] for i in range(10)]
+for i in range(N):
+    n = input().split()
+    b = int(n[0])
+    f = int(n[1])
+    r = int(n[2])
+    v = int(n[3])
+    m[b-1][f-1][r-1] += v
+
+for i in range(4):
+    for j in range(3):
+        for k in range(10):
+            line += ' {0}'.format(m[i][j][k])
+        print(line)
+        line = ''
+    if i < 3:
+        print('#'*20)
+"
+s485638370,Python,unknown,"a = input()
+print(""Yes"" if '9' in a else ""No"")
+"
+s642705424,Python,unknown,"N = int(input())
+S = input()
+x = 1
+for i in range(N-1):
+    if S[i] != S[i+1]:
+        x = x+1
+print(x)
+"
+s048491063,Python,unknown,"def main():
+
+    N, M, Q = map(int, input().split())
+    train = [[0 for _ in range(N)] for _ in range(N)]
+    for _ in range(M):
+        l, r = map(int, input().split())
+        train[l-1][r-1] += 1
+
+    accum = [[0 for _ in range(N+1)]]
+    for i in range(N):
+        temp = [0]
+        v = 0
+        for j in range(N):
+            v += train[i][j]
+            temp.append(accum[-1][j+1]+v)
+        accum.append(temp)
+
+    for _ in range(Q):
+        p, q = map(int, input().split())
+        v = accum[q][q] - accum[p-1][q] - accum[q][p-1] + accum[p-1][p-1]
+        print(v)
+
+
+if __name__ == '__main__':
+    main()
+"
+s040517919,Python,unknown,"A, B = map(int, input().split())
+if A == B:
+    print(""Draw"")
+elif A == 1:
+    print(""Alice"")
+elif B == 1:
+    print(""Bob"")
+elif A > B:
+    print(""Alice"")
+else:
+    print(""Bob"")
+"
+s147181072,Python,unknown,"print(input().swapcase())
+"
+s086522214,Python,unknown,"import collections
+import scipy.misc
+import sys
+import numpy as np
+import math
+from operator import itemgetter
+import itertools
+import copy
+
+
+def prime_decomposition(n):
+    i = 2
+    table = []
+    while i * i <= n:
+        while n % i == 0:
+            n /= i
+            table.append(int(i))
+        i += 1
+    if n > 1:
+        table.append(int(n))
+    return table
+
+
+def digit(i):
+    if i > 0:
+        return digit(i//10) + [i % 10]
+    else:
+        return []
+
+
+def getNearestValueIndex(list, num):
+
+    idx = np.abs(np.asarray(list) - num).argmin()
+    return idx
+
+
+S = input()
+T = S.split('/')
+
+date = int(T[1]+T[2])
+if date <= 430:
+    print('Heisei')
+else:
+    print('TBD')
+"
+s977408144,Python,unknown,"import re
+import math
+from collections import defaultdict
+import itertools
+from copy import deepcopy
+import random
+from heapq import heappop, heappush
+import time
+import os
+import queue
+import sys
+import datetime
+from functools import lru_cache
+
+readline = sys.stdin.readline
+sys.setrecursionlimit(2000000)
+
+alphabet = ""abcdefghijklmnopqrstuvwxyz""
+mod = int(10**9+7)
+inf = int(10**20)
+
+
+def yn(b):
+    if b:
+        print(""yes"")
+    else:
+        print(""no"")
+
+
+def Yn(b):
+    if b:
+        print(""Yes"")
+    else:
+        print(""No"")
+
+
+def YN(b):
+    if b:
+        print(""YES"")
+    else:
+        print(""NO"")
+
+
+class union_find():
+    def __init__(self, n):
+        self.n = n
+        self.P = [a for a in range(N)]
+        self.rank = [0]*n
+
+    def find(self, x):
+        if (x != self.P[x]):
+            self.P[x] = self.find(self.P[x])
+        return self.P[x]
+
+    def same(self, x, y):
+        return self.find(x) == self.find(y)
+
+    def link(self, x, y):
+        if self.rank[x] < self.rank[y]:
+            self.P[x] = y
+        elif self.rank[y] < self.rank[x]:
+            self.P[y] = x
+        else:
+            self.P[x] = y
+            self.rank[y] += 1
+
+    def unite(self, x, y):
+        self.link(self.find(x), self.find(y))
+
+    def size(self):
+        S = set()
+        for a in range(self.n):
+            S.add(self.find(a))
+        return len(S)
+
+
+def is_power(a, b):
+    now = b
+    while now < a:
+        now *= b
+    if now == a:
+        return True
+    else:
+        return False
+
+
+def bin_(num, size):
+    A = [0]*size
+    for a in range(size):
+        if (num >> (size-a-1)) & 1 == 1:
+            A[a] = 1
+        else:
+            A[a] = 0
+    return A
+
+
+def get_facs(n, mod_=0):
+    A = [1]*(n+1)
+    for a in range(2, len(A)):
+        A[a] = A[a-1]*a
+        if (mod > 0):
+            A[a] %= mod_
+    return A
+
+
+def comb(n, r, mod, fac):
+    if (n-r < 0):
+        return 0
+    return (fac[n]*pow(fac[n-r], mod-2, mod)*pow(fac[r], mod-2, mod)) % mod
+
+
+def next_comb(num, size):
+    x = num & (-num)
+    y = num+x
+    z = num & (~y)
+    z //= x
+    z = z >> 1
+    num = (y | z)
+    if (num >= (1 << size)):
+        return False
+    else:
+        return num
+
+
+def get_primes(n, type=""int""):
+    A = [True]*(n+1)
+    A[0] = False
+    A[1] = False
+    for a in range(2, n+1):
+        if A[a]:
+            for b in range(a*2, n+1, a):
+                A[b] = False
+    if (type == ""bool""):
+        return A
+    B = []
+    for a in range(n+1):
+        if (A[a]):
+            B.append(a)
+    return B
+
+
+def is_prime(num):
+    if (num <= 2):
+        return False
+    i = 2
+    while i*i <= num:
+        if (num % i == 0):
+            return False
+        i += 1
+    return True
+
+
+def ifelse(a, b, c):
+    if a:
+        return b
+    else:
+        return c
+
+
+def join(A, c="" ""):
+    n = len(A)
+    A = list(map(str, A))
+    s = """"
+    for a in range(n):
+        s += A[a]
+        if (a < n-1):
+            s += c
+    return s
+
+
+def factorize(n, type_=""dict""):
+    b = 2
+    list_ = []
+    while b * b <= n:
+        while n % b == 0:
+            n //= b
+            list_.append(b)
+        b += 1
+    if n > 1:
+        list_.append(n)
+    if type_ == ""dict"":
+        dic = {}
+        for a in list_:
+            if a in dic:
+                dic[a] += 1
+            else:
+                dic[a] = 1
+        return dic
+    elif type_ == ""list"":
+        return list_
+    else:
+        return None
+
+
+def floor_(n, x=1):
+    return x*(n//x)
+
+
+def ceil_(n, x=1):
+    return x*((n+x-1)//x)
+
+
+def hani(x, min_, max_):
+    ret = x
+    if x < min_:
+        ret = min_
+    if x > max_:
+        ret = max_
+    return ret
+
+
+def seifu(x):
+    return x//abs(x)
+
+
+def main():
+    n, l = map(int, input().split())
+    S = []
+    for a in range(n):
+        S.append(input())
+    S.sort()
+    print("""".join(S))
+
+
+main()
+"
+s797394058,Python,unknown,"from itertools import *
+
+N = int(input())
+x = 1
+
+N_list = [x+1 for x in range(N)]
+
+n = list(product(N_list, repeat=3))
+
+m = len(n)
+
+print(m)
+"
+s934308496,Python,unknown,"n, x = map(int, input().split())
+m = [int(input()) for _ in range(n)]
+m.sort()
+print(n + (x - sum(m)) // m[0])
+"
+s411244720,Python,unknown,"N, K = [int(_) for _ in input().split()]
+S = set()
+for i in range(K):
+    d = int(input())
+    A = [int(_) for _ in input().split()]
+    S = S | set(A)
+print(N - len(S))
+"
+s200092246,Python,unknown,"N = int(input())
+ans = []
+
+for i in range(1, N+1):
+    if sum(range(1, i + 1)) < N:
+        continue
+    else:
+        ans = [i - 1, sum(range(1, i + 1)) - N]
+        break
+for i in range(ans[0]+1):
+    if i + 1 != ans[1]:
+        print(i + 1)
+"
+s453478465,Python,unknown,"a, b = map(int, input().split())
+if a <= 8 and b <= 8:
+    print(""Yay!"")
+else:
+    print("":("")
+"
+s668439281,Python,unknown,"import collections
+
+n = int(input())
+ls = [input() for i in range(n)]
+c = collections.Counter(ls)
+
+count = c.most_common()[0][1]
+ans = []
+p = c.most_common()
+for i in range(len(c)):
+    if p[i][1] == count:
+        ans.append(p[i][0])
+    else:
+        break
+ans = sorted(ans)
+for i in ans:
+    print(i)
+"
+s615966179,Python,unknown,"n, a, b = map(int, input().split())
+ans = n//(a+b)*a
+r = min(n % (a+b), a)
+ans += r
+print(ans)
+"
+s951169509,Python,unknown,"from collections import deque
+H, W = map(int, input().split())
+G = []
+for i in range(H+2):
+    if i == 0 or i == H+1:
+        G.append('#'*(W+2))
+    else:
+        G.append('#' + input() + '#')
+
+ans = 0
+for sx in range(W+2):
+    for sy in range(H+2):
+        if G[sy][sx] == '.':
+            dist = [[-float('inf') for i in range(W+2)] for i in range(H+2)]
+            visited = [[-1 for i in range(W+2)] for i in range(H+2)]
+            q = deque([])
+            q.append((sx, sy))
+            dist[sy][sx] = 0
+            visited[sy][sx] = 1
+            while q:
+                x, y = q.popleft()
+
+                if G[y][x+1] == '.' and visited[y][x+1] == -1:
+                    q.append((x+1, y))
+                    dist[y][x+1] = dist[y][x] + 1
+                    visited[y][x+1] = 1
+
+                if G[y][x-1] == '.' and visited[y][x-1] == -1:
+                    q.append((x-1, y))
+                    dist[y][x-1] = dist[y][x] + 1
+                    visited[y][x-1] = 1
+
+                if G[y+1][x] == '.' and visited[y+1][x] == -1:
+                    q.append((x, y+1))
+                    dist[y+1][x] = dist[y][x] + 1
+                    visited[y+1][x] = 1
+
+                if G[y-1][x] == '.' and visited[y-1][x] == -1:
+                    q.append((x, y-1))
+                    dist[y-1][x] = dist[y][x] + 1
+                    visited[y-1][x] = 1
+            for i in range(W+2):
+                for j in range(H+2):
+                    ans = max(ans, dist[j][i])
+print(ans)
+"
+s676839884,Python,unknown,"s = input()
+t = input()
+
+if t[:-1] == s:
+    print('Yes')
+else:
+    print('No')
+"
+s554393427,Python,unknown,"N = int(input())
+mo = []
+for _ in range(N):
+    x, u = input().split()
+    x = float(x)
+    mo.append([x, u])
+okz = 0
+for i in mo:
+    if i[1] == ""JPY"":
+        okz += i[0]
+    else:
+        okz += i[0]*380000
+
+print(okz)
+"
+s441329208,Python,unknown,"import sys
+read = sys.stdin.read
+readline = sys.stdin.readline
+readlines = sys.stdin.readlines
+sys.setrecursionlimit(10 ** 7)
+s = sorted(readline().rstrip())
+t = sorted(readline().rstrip())[::-1]
+print(""Yes"" if s < t else ""No"")
+"
+s897879131,Python,unknown,"R, G, B, N = map(int, input().split())
+
+score = 0
+for i in range(N // R + 1):
+    for j in range((N-i * R) // G + 1):
+        if N - i * R - j * G >= 0 and (N - i * R - j * G) % B == 0:
+            score += 1
+
+print(score)
+"
+s344468705,Python,unknown,"import sys
+
+
+from bisect import bisect_left, bisect_right
+
+
+input = sys.stdin.readline
+
+
+def getS(): return input().strip()
+def getN(): return int(input())
+def getList(): return list(map(int, input().split()))
+def getZList(): return [int(x) - 1 for x in input().split()]
+
+
+INF = 10 ** 20
+MOD = 1000000007
+
+
+def solve():
+    n = getN()
+    dp = [-INF]
+    for i in range(n):
+        num = getN()
+        num = -num
+        if num >= dp[-1]:
+            dp.append(num)
+        else:
+            idx = bisect_right(dp, num)
+            dp[idx] = num
+
+    print(len(dp) - 1)
+    return
+
+
+def main():
+    n = getN()
+    for _ in range(n):
+        solve()
+
+
+if __name__ == ""__main__"":
+
+    solve()
+"
+s233116196,Python,unknown,"from collections import deque
+N, M = map(int, input().split())
+G = {i: [] for i in range(1, N+1)}
+for _ in range(M):
+    a, b = map(int, input().split())
+    G[a].append(b)
+    G[b].append(a)
+col = [-1 for _ in range(N+1)]
+cnt = 0
+for i in range(1, N+1):
+    if col[i] < 0:
+        col[i] = cnt
+        que = deque([i])
+        while que:
+            x = que.popleft()
+            for y in G[x]:
+                if col[y] < 0:
+                    col[y] = cnt
+                    que.append(y)
+        cnt += 1
+cmax = max(col)
+print(cmax)
+"
+s062747389,Python,unknown,"a, b = map(int, input().split())
+print(a+b if a == b else max(a, b)*2-1)
+"
+s964794058,Python,unknown,"memTime = int(input())
+memLate = input().split()
+memLate = [int(i) for i in memLate]
+colorList = []
+memColor = 0
+highLate = 0
+for color in range(memTime):
+    member = memLate[color]
+    if member // 400 >= 8:
+        highLate += 1
+    elif ((member // 400) in colorList) == False:
+        colorList.append(member // 400)
+maxColor = len(colorList) + highLate
+minColor = len(colorList)
+if minColor == 0:
+    minColor = 1
+print(str(minColor) + "" "" + str(maxColor))
+"
+s724326345,Python,unknown,"def main():
+    A, B, C, X, Y = map(int, input().split())
+    ans = 10 ** 10
+
+    for k in range(max(X, Y) + 1):
+        total = 2 * C * k + A * max(0, X - k) + B * max(0, Y - k)
+        if total < ans:
+            ans = total
+
+    print(ans)
+
+
+if __name__ == ""__main__"":
+    main()
+"
+s878873709,Python,unknown,"import sys
+
+readline = sys.stdin.readline
+MOD = 10 ** 9 + 7
+INF = float('INF')
+sys.setrecursionlimit(10 ** 5)
+
+
+def main():
+    N = int(readline())
+    s = {1, 2, 4, 8, 16, 32, 64}
+    ans = 0
+
+    for i in range(1, N + 1):
+        if i in s:
+            ans = i
+
+    print(ans)
+
+
+if __name__ == '__main__':
+    main()
+"
+s652791025,Python,unknown,"n = input()
+n = int(n[-1])
+
+if n == 2 or n == 4 or n == 5 or n == 7 or n == 9:
+    print(""hon"")
+elif n == 0 or n == 1 or n == 6 or n == 8:
+    print(""pon"")
+else:
+    print(""bon"")
+"
+s039768540,Python,unknown,"x = int(input())
+print(""ai1333{}"".format(""3""*(x // 100)))
+"
+s174910557,Python,unknown,"N = int(input())
+S = input()
+
+ans = 1
+tmp = S[0]
+for s in S:
+    if s != tmp:
+        ans += 1
+        tmp = s
+
+print(ans)
+"
+s893778513,Python,unknown,"n = input()
+l = list(map(int, input().split()))
+
+b = max(l)
+s = sum(l)
+
+if b < s - b:
+    print('Yes')
+else:
+    print('No')
+"
+s592421258,Python,unknown,"I = input
+s = I()*2
+print(['No', 'Yes'][I() in s])
+"
+s182651529,Python,unknown,"N, K = map(int, input().split())
+score = list(map(int, input().split()))
+mae = 0
+usiro = K
+for i in range(N-K):
+    if score[mae] < score[usiro]:
+        print('Yes')
+    else:
+        print('No')
+    mae += 1
+    usiro += 1
+"
+s681170949,Python,unknown,"N = str(input())
+
+print(""ABC""+N)
+"
+s486032847,Python,unknown,"import math
+
+
+def keta(s):
+    if len(s) < 2:
+        return int(s)
+    n = sum(map(int, s))
+    return keta(str(n))
+
+
+def main():
+    N = input()
+
+    if keta(N) % 9 == 0:
+        print(""Yes"")
+    else:
+        print(""No"")
+
+
+if __name__ == ""__main__"":
+    main()
+"
+s694958625,Python,unknown,"x = int(input())
+a = int(input())
+b = int(input())
+
+print((x-a) % b)
+"
+s702834515,Python,unknown,"n = int(input())
+r = 0
+for ii in range(n):
+    if (ii+1) % 3 != 0 and (ii+1) % 5 != 0:
+        r += (ii+1)
+print(r)
+"
+s664563518,Python,unknown,"from heapq import heappush, heappop, heapify
+from collections import deque, defaultdict, Counter
+import itertools
+from itertools import permutations, combinations, accumulate
+import sys
+import bisect
+import string
+import math
+import time
+
+
+def I(): return int(input())
+
+
+def MI(): return map(int, input().split())
+
+
+def LI(): return [int(i) for i in input().split()]
+
+
+def LI_(): return [int(i)-1 for i in input().split()]
+
+
+def StoI(): return [ord(i)-97 for i in input()]
+
+
+def ItoS(nn): return chr(nn+97)
+
+
+def input(): return sys.stdin.readline().rstrip()
+
+
+def show(*inp, end='\n'):
+    if show_flg:
+        print(*inp, end=end)
+
+
+YN = ['No', 'Yes']
+MOD = 10**9+7
+inf = float('inf')
+IINF = 10**10
+l_alp = string.ascii_lowercase
+u_alp = string.ascii_uppercase
+ts = time.time()
+sys.setrecursionlimit(10**6)
+nums = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10']
+
+show_flg = False
+
+
+def main():
+    N = I()
+    s = [0] * N
+    t = [0] * N
+
+    for i in range(N):
+        s[i], t[i] = map(str, input().split())
+        t[i] = int(t[i])
+
+    X = input()
+    xi = 0
+
+    for i in range(N):
+        if s[i] == X:
+            xi = i
+            break
+
+    ans = 0
+
+    for i in range(N):
+        if xi < i:
+            ans += t[i]
+
+    print(ans)
+
+
+if __name__ == '__main__':
+    main()
+"
+s870744379,Python,unknown,"n = int(input())
+
+if n >= 1000:
+    print('ABD')
+else:
+    print('ABC')
+"
+s103354654,Python,unknown,"W, H, x, y, r = map(int, input().split())
+
+if x >= r and (W - r) >= x:
+    if y >= r and (H - r) >= y:
+        print('Yes')
+    else:
+        print('No')
+else:
+    print('No')
+"
+s895229833,Python,unknown,"N = int(input())
+H = list(map(int, list(input().split())))
+
+count_best, count_tmp = 0, 0
+
+for i in range(N-1):
+    if H[i] >= H[i+1]:
+        count_tmp += 1
+    else:
+        if count_tmp > count_best:
+            count_best = count_tmp
+
+        count_tmp = 0
+
+if count_tmp > count_best:
+    count_best = count_tmp
+
+print(count_best)
+"
+s749244504,Python,unknown,"from itertools import chain
+import numpy as np
+import networkx as nx
+
+X = iter(open(0).readlines())
+h, w = map(int, next(X).split())
+C = np.zeros((10, 10), dtype=int)
+for i in range(10):
+    for j, c in enumerate(map(int, next(X).split())):
+        C[i, j] = c
+A = np.zeros((h, w), dtype=int)
+for i in range(h):
+    for j, a in enumerate(map(int, next(X).split())):
+        A[i, j] = a
+
+G = nx.DiGraph(C)
+d = {}
+for i in range(10):
+    if i == 1:
+        continue
+    d[i] = nx.shortest_path_length(G, i, 1, weight='weight')
+
+s = 0
+for a in chain.from_iterable(A):
+    if a == -1 or a == 1:
+        continue
+    s += d[a]
+print(s)
+"
+s759499751,Python,unknown,"n, k = map(int, input().split())
+a = [i for i in input()]
+c = [0]*n
+for i in range(1, n):
+    if a[i] == ""C"" and a[i-1] == ""A"":
+        c[i] = c[i-1]+1
+    else:
+        c[i] = c[i-1]
+for w in range(k):
+    l, r = map(int, input().split())
+    print(c[r-1]-c[l-1])
+"
+s124725275,Python,unknown,"from collections import deque
+from itertools import product, permutations, combinations
+import sys
+sys.setrecursionlimit(1 << 25)
+readline = sys.stdin.buffer.readline
+read = sys.stdin.readline
+ra = range
+enu = enumerate
+
+
+def exit(*argv, **kwarg):
+    print(*argv, **kwarg)
+    sys.exit()
+
+
+def mina(*argv, sub=1): return list(map(lambda x: x - sub, argv))
+
+
+def a_int(): return int(readline())
+
+
+def ints(): return list(map(int, readline().split()))
+
+
+def read_col(H):
+
+    ret = []
+    for _ in range(H):
+        ret.append(list(map(int, readline().split())))
+    return tuple(map(list, zip(*ret)))
+
+
+def read_map_as(H, replace={'#': 1, '.': 0}, pad=None):
+
+    if pad is None:
+        ret = []
+        for _ in range(H):
+            ret.append([replace[s] for s in read()[:-1]])
+
+    else:
+        ret = [[pad] * (W + 2)]
+        for _ in range(H):
+            ret.append([pad] + [replace[s] for s in read()[:-1]] + [pad])
+        ret.append([pad] * (W + 2))
+
+    return ret
+
+
+def grid_dijkstra(grid, si: int, sj: int):
+
+    from heapq import heappop, heappush
+    H = len(grid)
+    W = len(grid[0])
+    D = [[-1] * W for _ in [0] * H]
+    que = [(0, si, sj)]
+    while que:
+        c, i, j = heappop(que)
+        if D[i][j] != -1:
+            continue
+        D[i][j] = c
+        for di, dj in product([-2, -1, 0, 1, 2], repeat=2):
+            ni, nj = i + di, j + dj
+            if not (0 <= ni < H and 0 <= nj < W) or D[ni][nj] != -1 or ni == nj == 0 or grid[ni][nj] == 1:
+                continue
+            if (di == 0 and abs(dj) == 1) or (dj == 0 and abs(di) == 1):
+                nc = c
+            else:
+                nc = c + 1
+            heappush(que, (nc, ni, nj))
+    return D
+
+
+MOD = 10**9 + 7
+INF = 2**31
+
+
+H, W = ints()
+si, sj = mina(*ints())
+ti, tj = mina(*ints())
+
+S = read_map_as(H)
+D = [[-1] * W for _ in [0] * H]
+que = deque([(0, si, sj)])
+while que:
+    c, i, j = que.popleft()
+    if D[i][j] != -1:
+        continue
+    D[i][j] = c
+    for di, dj in product([-2, -1, 0, 1, 2], repeat=2):
+        ni, nj = i + di, j + dj
+        if not (0 <= ni < H and 0 <= nj < W) or D[ni][nj] != -1 or ni == nj == 0 or S[ni][nj] == 1:
+            continue
+        if (di == 0 and abs(dj) == 1) or (dj == 0 and abs(di) == 1):
+            que.appendleft((c, ni, nj))
+        else:
+            que.append((c + 1, ni, nj))
+
+print(D[ti][tj])
+"
+s777789287,Python,unknown,"n, m = map(int, input().split())
+a = list(map(int, input().split()))
+a.sort(reverse=True)
+s = sum(a)/(4*m)
+if a[m-1] >= s:
+    print('Yes')
+else:
+    print('No')
+"
+s858647829,Python,unknown,"a, b = map(int, input().split())
+
+if a % 3 == 0 or b % 3 == 0 or (a + b) % 3 == 0:
+    print('Possible')
+else:
+    print('Impossible')
+"
+s763097776,Python,unknown,"n = int(input())
+p = [int(x) for x in input().split()]
+p_copy = p[:]
+
+p.sort()
+
+count = 0
+for i in range(n):
+    if p[i] != p_copy[i]:
+        count += 1
+
+if count == 0 or count == 2:
+    print(""YES"")
+else:
+    print(""NO"")
+"
+s582886163,Python,unknown,"N = int(input())
+capacity_list = [int(input()) for _ in range(5)]
+capacity_list.sort()
+bottle_neck = capacity_list[0]
+print(4+int((N+bottle_neck-1)/bottle_neck))
+"
+s787811177,Python,unknown,"n = int(input())
+ls = [list(map(int, input().split())) for i in range(n)]
+ls = sorted(ls, key=lambda x: sum(x), reverse=True)
+taka = sum([ls[i][0] for i in range(0, len(ls), 2)])
+aoki = sum([ls[i][1] for i in range(1, len(ls), 2)])
+
+print(taka-aoki)
+"
+s906994739,Python,unknown,"n = int(input())
+F = [tuple(map(int, input().split())) for _ in range(n)]
+P = [tuple(map(int, input().split())) for _ in range(n)]
+ans = -10 ** 18
+
+for i in range(1, 2**10):
+    tmp = 0
+    lst = [0]*n
+    for j in range(10):
+        if (i >> j) & 1:
+            for k in range(n):
+                lst[k] += F[k][j]
+    for k in range(n):
+        tmp += P[k][lst[k]]
+    ans = max(ans, tmp)
+
+
+print(ans)
+"
+s957164965,Python,unknown,"X, N = list(map(int, input().split()))
+p = list(map(int, input().split()))
+
+p.sort()
+
+candidates = {}
+for i in range(-1, 102):
+
+    if i in p:
+        continue
+
+    if not (abs(X-i) in candidates.keys()):
+        candidates[abs(X-i)] = [i]
+    else:
+        candidates[abs(X-i)].append(i)
+
+smallest = min(candidates.keys())
+
+minNum = min(candidates[smallest])
+
+print(minNum)
+"
+s259116349,Python,unknown,"from math import factorial as f
+
+N = int(input())
+
+primes = [2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47]
+divs = []
+for i in range(1, 101):
+    tmp = [0 for _ in range(len(primes))]
+    for j in range(len(primes)):
+        p = primes[j]
+        tmp[j] = 0
+        while (i//p == i/p):
+            i = i//p
+            tmp[j] += 1
+    divs.append(tmp)
+
+
+divsum = [0 for _ in range(len(primes))]
+for i in range(1, N+1):
+    for j in range(len(primes)):
+        divsum[j] += divs[i-1][j]
+
+
+def num(n):
+    return len(list(filter(lambda x: x >= n-1, divsum)))
+
+
+ans = 0
+
+
+ans += num(75)
+
+
+ans += num(15)*(num(5)-1)
+
+
+ans += num(25)*(num(3)-1)
+
+
+ans += num(5) * (num(5)-1) * (num(3)-2) // 2
+print(int(ans))
+"
+s191853417,Python,unknown,"a, b, c, d, e = map(int, input().split())
+print(15-a-b-c-d-e)
+"
+s557080041,Python,unknown,"N = input()
+if N == 0:
+    print('Yes')
+else:
+    N = str(N)
+    L = list(N)
+    L = [int(s) for s in L]
+    X = sum(L)
+    if X % 9 == 0:
+        print('Yes')
+    else:
+        print('No')
+"
+s763208424,Python,unknown,"from math import floor
+from heapq import heappush, heappop
+n, m = map(int, input().split())
+a = []
+for i in map(int, input().split()):
+    heappush(a, -i)
+
+
+def dis(x, y): return x // 2**y
+
+
+for _ in range(m):
+    heappush(a, -dis(-heappop(a), 1))
+print(-sum(a))
+"
+s880494034,Python,unknown,"import math
+
+N = input()
+XS = [int(i) for i in input().split()]
+
+m = 9999999999
+for i in range(1, 101):
+    c = sum([(x - i) ** 2 for x in XS])
+    if m > c:
+        m = c
+
+print(m)
+"
+s770408311,Python,unknown,"n = int(input())
+res = []
+for i in range(n):
+    a = input()
+    res.append(a)
+print(len(set(res)))
+"
+s167793578,Python,unknown,"N, M = map(int, input().split())
+
+a = N * (N - 1) // 2
+b = M * (M - 1) // 2
+
+print(a + b)
+"
+s591424993,Python,unknown,"d, g = list(map(int, input().split()))
+pc = [list(map(int, input().split())) for _ in range(d)]
+
+ans = float(""inf"")
+
+for bit in range(1 << d):
+    count = 0
+    sum = 0
+    nokori = set(range(1, d + 1))
+
+    for i in range(d):
+        if bit & (1 << i):
+            sum += pc[i][0] * (i + 1) * 100 + pc[i][1]
+            count += pc[i][0]
+            nokori.discard(i + 1)
+
+    if sum < g:
+        use = max(nokori)
+        n = min(pc[use-1][0], -(-(g - sum) // (use * 100)))
+        count += n
+        sum += n * use * 100
+
+    if sum >= g:
+        ans = min(ans, count)
+print(ans)
+"
+s142939923,Python,unknown,"a, b = map(int, input().split())
+
+
+x = [a + b]
+
+x.append(a - b)
+
+x.append(a * b)
+print(max(x))
+"
+s666154520,Python,unknown,"n = int(input())
+for i in range(1, 10 ** 5):
+    if i * i > n:
+        print((i-1) * (i-1))
+        exit()
+"
+s952876397,Python,unknown,"n = int(input())
+s = input()
+
+left = 0
+for i in s:
+    if i == "")"":
+        left += 1
+    else:
+        break
+
+left1 = 0
+right1 = 0
+
+for i in range(left, n):
+    if s[i] == ""("":
+        right1 += 1
+    elif right1 > 0:
+        right1 -= 1
+    else:
+        left1 += 1
+
+left1 += left
+for i in range(right1):
+    s += "")""
+for i in range(left1):
+    s = ""("" + s
+
+print(s)
+"
+s151217193,Python,unknown,"R = int(input())
+G = int(input())
+print(G*2-R)
+"
+s052231578,Python,unknown,"import bisect
+
+N = int(input())
+arr = [111, 222, 333, 444, 555, 666, 777, 888, 999]
+ans_idx = bisect.bisect_left(arr, N)
+print(arr[ans_idx])
+"
+s146553386,Python,unknown,"import numpy
+n = int(input())
+a = []
+for i in range(2):
+    a.append(list(map(int, input().split())))
+a[1] = a[1][::-1]
+res_0 = numpy.cumsum(a[0])
+res_1 = numpy.cumsum(a[1])
+ans = 0
+for i in range(n):
+    check = res_0[i] + res_1[n-1-i]
+    ans = max(ans, check)
+print(ans)
+"
+s913338871,Python,unknown,"N = int(input())
+a = list(map(int, input().split()))
+a.sort()
+
+s = [ai for ai in a[N::2]]
+print(sum(s))
+"
+s454986054,Python,unknown,"n = int(input())
+print(n**3)
+"
+s793709854,Python,unknown,"N, T = map(int, input().split())
+L = [[int(l) for l in input().split()] for _ in range(N)]
+
+dp = [[0]*T for _ in range(N+1)]
+
+for i in range(N):
+    for j in range(T):
+        if j < L[i][0]:
+            dp[i+1][j] = dp[i][j]
+        else:
+            dp[i+1][j] = max(dp[i][j], dp[i][j-L[i][0]]+L[i][1])
+
+used = []
+B = dp[N][T-1]
+j = T-1
+for i in range(N-1, -1, -1):
+    if B == dp[i][j]:
+        continue
+    B -= L[i][1]
+    used.append(i)
+    j -= L[i][0]
+
+ans = dp[N][T-1]
+c = 0
+for i in range(N):
+    if i in used:
+        continue
+    c = max(c, L[i][1])
+
+print(ans+c)
+"
+s246280701,Python,unknown,"n = int(input())
+x = list(map(int, input().split()))
+ans = 10**10
+for i in range(101):
+    tmp = [abs(i - x[j])**2 for j in range(n)]
+    if sum(tmp) < ans:
+        ans = sum(tmp)
+
+print(ans)
+"
+s590045523,Python,unknown,"N = int(input())
+L = list(map(int, input().split()))
+
+ans = 0
+for i in range(N-2):
+    for j in range(i+1, N-1):
+        for k in range(j+1, N):
+            a = L[i]
+            b = L[j]
+            c = L[k]
+            if a == b or b == c or c == a:
+                continue
+            if a+b > c and b+c > a and c+a > b:
+                ans += 1
+
+print(ans)
+"
+s007458552,Python,unknown,"import sys
+from collections import Counter, defaultdict
+
+INF = float('inf')
+MOD = 10 ** 9 + 7
+
+
+def LI(): return [int(x) for x in sys.stdin.readline().split()]
+def LI_(): return [int(x) - 1 for x in sys.stdin.readline().split()]
+def LS(): return sys.stdin.readline().split()
+def II(): return int(sys.stdin.readline())
+def SI(): return input()
+
+
+def main():
+    n = II()
+    S = SI()
+    C = Counter(S)
+
+    return 'Yes' if C['R'] > n - C['R'] else 'No'
+
+
+print(main())
+"
+s554858080,Python,unknown,"input = list(map(str, input().split()))
+num = ''.join(input)
+
+if (int(num) % 4 == 0):
+    print('YES')
+else:
+    print('NO')
+"
+s110149598,Python,unknown,"a, b = input().split()
+if a < b:
+    print(""<"")
+elif a > b:
+    print("">"")
+else:
+    print(""="")
+"
+s538657784,Python,unknown,"import math
+N = int(input())
+sqN = int(math.sqrt(N))
+for i in range(sqN):
+    if N % (sqN-i) == 0:
+        print(int(N/(sqN-i)+sqN-i)-2)
+        break
+"
+s001486412,Python,unknown,"n = int(input())
+a = list(map(int, input().split()))
+below = 0
+for i in range(n):
+    below += 1/a[i]
+print(1/below)
+"
+s242961129,Python,unknown,"N = int(input())
+A = [int(x) for x in input().split()]
+ans = abs(A[-1])
+A = [0]+A+[0]
+diff = [0 for x in range(N)]
+for i in range(1, N+1):
+    dif = abs(A[i]-A[i-1])+abs(A[i]-A[i+1])-abs(A[i-1]-A[i+1])
+    ans += abs(A[i]-A[i-1])
+    diff[i-1] = dif
+
+for i in range(N):
+    print(ans-diff[i])
+"
+s896397037,Python,unknown,"s = list(str(input()))
+s.sort()
+if s[0] == s[1] and s[0] != s[2] and s[2] == s[3]:
+    print(""Yes"")
+else:
+    print(""No"")
+"
+s423256012,Python,unknown,"A, B = map(int, input().split())
+
+if (A+B) % 2 == 1:
+    print('IMPOSSIBLE')
+else:
+    print((A+B)//2)
+"
+s002779582,Python,unknown,"N = int(input())
+Hs = list(map(int, input().split()))
+
+ans = 0
+maxH = 0
+for H in Hs:
+    if maxH <= H:
+        ans += 1
+        maxH = H
+
+print(ans)
+"
+s331817031,Python,unknown,"h, w = map(int, input().split())
+l = []
+for _ in range(h):
+    a = list(map(str, input()))
+    l.append(a)
+
+tmp = 0
+
+for i in range(h):
+    for j in range(w):
+        if l[i][j] == ""#"":
+            if j < tmp:
+                print(""Impossible"")
+                exit()
+            else:
+                tmp = j
+
+
+print(""Possible"")
+"
+s355314304,Python,unknown,"n = int(input())
+
+if n % 1000 == 0:
+    print(0)
+else:
+    print(1000 - n % 1000)
+"
+s210889193,Python,unknown,"def solver():
+    N = int(input())
+    action = []
+    for i in range(N):
+        action.append(list(map(int, input().split())))
+
+    dp = [[0 for _ in range(3)] for _ in range(N)]
+
+    for i in range(3):
+        dp[0][i] = action[0][i]
+
+    for i in range(1, N):
+        dp[i][0] = max(dp[i-1][1] + action[i][0], dp[i-1][2] + action[i][0])
+        dp[i][1] = max(dp[i-1][0] + action[i][1], dp[i-1][2] + action[i][1])
+        dp[i][2] = max(dp[i-1][0] + action[i][2], dp[i-1][1] + action[i][2])
+    print(max(dp[N-1]))
+
+
+solver()
+"
+s289483518,Python,unknown,"n, m = map(int, input().split())
+a = list(map(int, input().split()))
+a.sort()
+ope = [list(map(int, input().split())) for _ in range(m)]
+ope = sorted(ope, key=lambda x: x[1], reverse=True)
+j = 0
+for i in range(n):
+    if a[i] < ope[j][1]:
+        a[i] = ope[j][1]
+        ope[j][0] -= 1
+        if ope[j][0] == 0:
+            j += 1
+            if j == len(ope):
+                break
+    else:
+        break
+print(sum(a))
+"
+s607161467,Python,unknown,"R = int(input())
+
+if R < 1200:
+    print(""ABC"")
+elif R < 2800:
+    print(""ARC"")
+else:
+    print(""AGC"")
+"
+s179314665,Python,unknown,"A, B = [int(x) for x in input().split()]
+if A < 10 and B < 10:
+    print(A*B)
+else:
+    print(-1)
+"
+s804484425,Python,unknown,"from operator import itemgetter
+
+
+n, k = map(int, input().split())
+info = [list(map(int, input().split())) for i in range(n)]
+
+info = sorted(info, key=itemgetter(1), reverse=True)
+
+selected = info[0:k]
+selected_only = []
+selected_chohuku = []
+unselected_only = []
+memo = {}
+for t, d in selected:
+    if t not in memo:
+        memo[t] = 1
+        selected_only.append(d)
+    else:
+        selected_chohuku.append(d)
+
+cnt_type = len(memo)
+for t, d in info[k:]:
+    if t not in memo:
+        memo[t] = 1
+        unselected_only.append(d)
+
+
+sum_select = sum(selected_chohuku) + sum(selected_only)
+ans = cnt_type*cnt_type + sum_select
+
+unselected_only = unselected_only[::-1]
+for i in range(min(len(selected_chohuku), len(unselected_only))):
+    cnt_type += 1
+    sum_select += unselected_only[-1]
+    sum_select -= selected_chohuku[-1]
+    del unselected_only[-1]
+    del selected_chohuku[-1]
+    tmp = cnt_type*cnt_type + sum_select
+    ans = max(ans, tmp)
+print(ans)
+"
+s661542483,Python,unknown,"H = int(input())
+
+count = 0
+
+
+def dfs(h):
+    if h == 1:
+        return 1
+
+    return dfs(h // 2) * 2 + 1
+
+
+print(dfs(H))
+"
+s013976107,Python,unknown,"A, B = map(int, input().split())
+S = list(input())
+if S[A] == '-' and S.count('-') == 1:
+    print(""Yes"")
+else:
+    print(""No"")
+"
+s398580870,Python,unknown,"n, k = map(int, input().split())
+if k % 2 == 1:
+    print((n//k)**3)
+else:
+    print((n//k)**3+((n+k//2)//k)**3)
+"
