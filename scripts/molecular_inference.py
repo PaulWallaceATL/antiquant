@@ -10,6 +10,10 @@ from openai import OpenAI
 import pennylane as qml
 import io
 import base64
+import sys
+import os
+# Add scripts directory to path for relative imports
+sys.path.insert(0, os.path.dirname(__file__))
 from market_analysis import get_market_analysis
 
 # Load configuration
