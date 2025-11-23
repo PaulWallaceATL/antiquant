@@ -26,6 +26,14 @@ const StatusBadge = ({ status }: { status: string }) => {
 export default function MarketAnalysisDashboard({ data }: MarketAnalysisDashboardProps) {
     return (
         <div className="space-y-6">
+            {/* Data Source Info */}
+            {(data as any).dataSource && (
+                <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-3 sm:p-4">
+                    <p className="text-xs sm:text-sm text-blue-800 dark:text-blue-200">
+                        <span className="font-semibold">Data Sources:</span> {(data as any).dataSource}
+                    </p>
+                </div>
+            )}
             {/* Market Size Overview */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
                 <div className="bg-white dark:bg-gray-900 p-4 sm:p-6 rounded-xl border border-gray-200 dark:border-gray-800">
