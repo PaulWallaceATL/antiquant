@@ -1,4 +1,4 @@
-<svg width="1200" height="630" viewBox="0 0 1200 630" xmlns="http://www.w3.org/2000/svg">
+<svg width="1200" height="630" xmlns="http://www.w3.org/2000/svg">
   <defs>
     <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
       <stop offset="0%" style="stop-color:#2563eb;stop-opacity:1" />
@@ -16,104 +16,78 @@
     </filter>
   </defs>
   
-  <!-- Background -->
+  <!-- Background with gradient -->
   <rect width="1200" height="630" fill="url(#bgGradient)"/>
   
-  <!-- Subtle background pattern -->
-  <circle cx="150" cy="120" r="3" fill="white" opacity="0.08"/>
-  <circle cx="1050" cy="120" r="3" fill="white" opacity="0.08"/>
-  <circle cx="150" cy="510" r="3" fill="white" opacity="0.08"/>
-  <circle cx="1050" cy="510" r="3" fill="white" opacity="0.08"/>
-  
-  <!-- Main Content - Vertically Centered with Clear Separation -->
+  <!-- Main Content Container -->
   <g>
-    <!-- Logo Icon - Top Half -->
-    <g transform="translate(600, 200)">
-      <!-- Icon Container with Glass Effect -->
+    <!-- Logo Icon - Top Section (Clear Separation) -->
+    <g transform="translate(600, 180)">
+      <!-- Icon Container -->
       <rect x="-90" y="-90" width="180" height="180" rx="35" 
-            fill="rgba(255,255,255,0.18)" 
-            stroke="rgba(255,255,255,0.35)" 
-            stroke-width="4" 
-            filter="url(#glow) url(#shadow)"/>
+            fill="rgba(255,255,255,0.2)" 
+            stroke="rgba(255,255,255,0.4)" 
+            stroke-width="4"/>
       
       <!-- Molecular Structure -->
       <g>
-        <!-- Bonds (connecting lines) -->
-        <line x1="0" y1="0" x2="0" y2="-55" stroke="rgba(255,255,255,0.75)" stroke-width="4" stroke-linecap="round"/>
-        <line x1="0" y1="0" x2="55" y2="0" stroke="rgba(255,255,255,0.75)" stroke-width="4" stroke-linecap="round"/>
-        <line x1="0" y1="0" x2="0" y2="55" stroke="rgba(255,255,255,0.75)" stroke-width="4" stroke-linecap="round"/>
-        <line x1="0" y1="0" x2="-55" y2="0" stroke="rgba(255,255,255,0.75)" stroke-width="4" stroke-linecap="round"/>
+        <!-- Bonds -->
+        <line x1="0" y1="0" x2="0" y2="-55" stroke="rgba(255,255,255,0.8)" stroke-width="4" stroke-linecap="round"/>
+        <line x1="0" y1="0" x2="55" y2="0" stroke="rgba(255,255,255,0.8)" stroke-width="4" stroke-linecap="round"/>
+        <line x1="0" y1="0" x2="0" y2="55" stroke="rgba(255,255,255,0.8)" stroke-width="4" stroke-linecap="round"/>
+        <line x1="0" y1="0" x2="-55" y2="0" stroke="rgba(255,255,255,0.8)" stroke-width="4" stroke-linecap="round"/>
         
-        <!-- Central atom (larger) -->
-        <circle cx="0" cy="0" r="20" fill="white" filter="url(#glow)"/>
+        <!-- Central atom -->
+        <circle cx="0" cy="0" r="20" fill="white"/>
         
-        <!-- Outer atoms (smaller) -->
+        <!-- Outer atoms -->
         <circle cx="0" cy="-55" r="14" fill="white" opacity="0.95"/>
         <circle cx="55" cy="0" r="14" fill="white" opacity="0.95"/>
         <circle cx="0" cy="55" r="14" fill="white" opacity="0.95"/>
         <circle cx="-55" cy="0" r="14" fill="white" opacity="0.95"/>
         
-        <!-- Quantum symbol overlay -->
-        <text x="0" y="6" font-family="Arial, sans-serif" font-size="20" font-weight="bold" fill="#9333ea" text-anchor="middle">⚛</text>
+        <!-- Quantum symbol -->
+        <text x="0" y="6" font-family="Arial" font-size="20" font-weight="bold" fill="#9333ea" text-anchor="middle">⚛</text>
       </g>
     </g>
     
-    <!-- Text Section - Bottom Half (Clear Separation) -->
-    <g transform="translate(600, 380)">
+    <!-- Text Section - Bottom Section (No Overlap) -->
+    <g transform="translate(600, 400)">
       <!-- Main Title -->
       <text x="0" y="0" 
-            font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica', Arial, sans-serif" 
-            font-size="92" 
-            font-weight="800" 
+            font-family="Arial, sans-serif" 
+            font-size="90" 
+            font-weight="bold" 
             fill="white" 
             text-anchor="middle" 
-            letter-spacing="-2.5"
-            filter="url(#shadow)">MoleculeAI</text>
+            letter-spacing="-2">MoleculeAI</text>
       
       <!-- Tagline -->
-      <text x="0" y="65" 
-            font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica', Arial, sans-serif" 
-            font-size="40" 
-            font-weight="300" 
+      <text x="0" y="60" 
+            font-family="Arial, sans-serif" 
+            font-size="38" 
+            font-weight="normal" 
             fill="white" 
             text-anchor="middle" 
-            opacity="0.96" 
-            letter-spacing="-1"
-            filter="url(#shadow)">Quantum-Enhanced Drug Discovery</text>
+            opacity="0.95" 
+            letter-spacing="-1">Quantum-Enhanced Drug Discovery</text>
       
-      <!-- Feature Icons - Below Tagline -->
-      <g transform="translate(0, 110)">
+      <!-- Features -->
+      <g transform="translate(0, 100)">
         <g transform="translate(-180, 0)">
-          <text x="0" y="0" font-family="Arial" font-size="32" fill="white" text-anchor="middle" opacity="0.92">🧬</text>
-          <text x="0" y="38" 
-                font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif" 
-                font-size="24" 
-                font-weight="600" 
-                fill="white" 
-                text-anchor="middle" 
-                opacity="0.92">AI-Powered</text>
+          <text x="0" y="0" font-size="30" fill="white" text-anchor="middle" opacity="0.9">🧬</text>
+          <text x="0" y="35" font-family="Arial" font-size="22" font-weight="600" fill="white" text-anchor="middle" opacity="0.9">AI-Powered</text>
         </g>
         <g transform="translate(0, 0)">
-          <text x="0" y="0" font-family="Arial" font-size="32" fill="white" text-anchor="middle" opacity="0.92">⚛</text>
-          <text x="0" y="38" 
-                font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif" 
-                font-size="24" 
-                font-weight="600" 
-                fill="white" 
-                text-anchor="middle" 
-                opacity="0.92">Quantum ML</text>
+          <text x="0" y="0" font-size="30" fill="white" text-anchor="middle" opacity="0.9">⚛</text>
+          <text x="0" y="35" font-family="Arial" font-size="22" font-weight="600" fill="white" text-anchor="middle" opacity="0.9">Quantum ML</text>
         </g>
         <g transform="translate(180, 0)">
-          <text x="0" y="0" font-family="Arial" font-size="32" fill="white" text-anchor="middle" opacity="0.92">💊</text>
-          <text x="0" y="38" 
-                font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif" 
-                font-size="24" 
-                font-weight="600" 
-                fill="white" 
-                text-anchor="middle" 
-                opacity="0.92">Drug Discovery</text>
+          <text x="0" y="0" font-size="30" fill="white" text-anchor="middle" opacity="0.9">💊</text>
+          <text x="0" y="35" font-family="Arial" font-size="22" font-weight="600" fill="white" text-anchor="middle" opacity="0.9">Drug Discovery</text>
         </g>
       </g>
     </g>
   </g>
 </svg>
+
