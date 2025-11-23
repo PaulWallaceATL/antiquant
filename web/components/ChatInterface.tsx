@@ -67,10 +67,6 @@ export default function ChatInterface({ onAnalyzeSmiles }: ChatInterfaceProps) {
 
             const data: ChatResponse = await response.json();
 
-            if (data.error) {
-                throw new Error(data.error);
-            }
-
             if (data.sessionId) {
                 setSessionId(data.sessionId);
             }
