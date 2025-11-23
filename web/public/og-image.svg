@@ -1,0 +1,119 @@
+<svg width="1200" height="630" viewBox="0 0 1200 630" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#2563eb;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#9333ea;stop-opacity:1" />
+    </linearGradient>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="4" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <filter id="shadow">
+      <feDropShadow dx="0" dy="4" stdDeviation="8" flood-opacity="0.3"/>
+    </filter>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="1200" height="630" fill="url(#bgGradient)"/>
+  
+  <!-- Subtle background pattern -->
+  <circle cx="150" cy="120" r="3" fill="white" opacity="0.08"/>
+  <circle cx="1050" cy="120" r="3" fill="white" opacity="0.08"/>
+  <circle cx="150" cy="510" r="3" fill="white" opacity="0.08"/>
+  <circle cx="1050" cy="510" r="3" fill="white" opacity="0.08"/>
+  
+  <!-- Main Content - Vertically Centered with Clear Separation -->
+  <g>
+    <!-- Logo Icon - Top Half -->
+    <g transform="translate(600, 200)">
+      <!-- Icon Container with Glass Effect -->
+      <rect x="-90" y="-90" width="180" height="180" rx="35" 
+            fill="rgba(255,255,255,0.18)" 
+            stroke="rgba(255,255,255,0.35)" 
+            stroke-width="4" 
+            filter="url(#glow) url(#shadow)"/>
+      
+      <!-- Molecular Structure -->
+      <g>
+        <!-- Bonds (connecting lines) -->
+        <line x1="0" y1="0" x2="0" y2="-55" stroke="rgba(255,255,255,0.75)" stroke-width="4" stroke-linecap="round"/>
+        <line x1="0" y1="0" x2="55" y2="0" stroke="rgba(255,255,255,0.75)" stroke-width="4" stroke-linecap="round"/>
+        <line x1="0" y1="0" x2="0" y2="55" stroke="rgba(255,255,255,0.75)" stroke-width="4" stroke-linecap="round"/>
+        <line x1="0" y1="0" x2="-55" y2="0" stroke="rgba(255,255,255,0.75)" stroke-width="4" stroke-linecap="round"/>
+        
+        <!-- Central atom (larger) -->
+        <circle cx="0" cy="0" r="20" fill="white" filter="url(#glow)"/>
+        
+        <!-- Outer atoms (smaller) -->
+        <circle cx="0" cy="-55" r="14" fill="white" opacity="0.95"/>
+        <circle cx="55" cy="0" r="14" fill="white" opacity="0.95"/>
+        <circle cx="0" cy="55" r="14" fill="white" opacity="0.95"/>
+        <circle cx="-55" cy="0" r="14" fill="white" opacity="0.95"/>
+        
+        <!-- Quantum symbol overlay -->
+        <text x="0" y="6" font-family="Arial, sans-serif" font-size="20" font-weight="bold" fill="#9333ea" text-anchor="middle">⚛</text>
+      </g>
+    </g>
+    
+    <!-- Text Section - Bottom Half (Clear Separation) -->
+    <g transform="translate(600, 380)">
+      <!-- Main Title -->
+      <text x="0" y="0" 
+            font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica', Arial, sans-serif" 
+            font-size="92" 
+            font-weight="800" 
+            fill="white" 
+            text-anchor="middle" 
+            letter-spacing="-2.5"
+            filter="url(#shadow)">MoleculeAI</text>
+      
+      <!-- Tagline -->
+      <text x="0" y="65" 
+            font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica', Arial, sans-serif" 
+            font-size="40" 
+            font-weight="300" 
+            fill="white" 
+            text-anchor="middle" 
+            opacity="0.96" 
+            letter-spacing="-1"
+            filter="url(#shadow)">Quantum-Enhanced Drug Discovery</text>
+      
+      <!-- Feature Icons - Below Tagline -->
+      <g transform="translate(0, 110)">
+        <g transform="translate(-180, 0)">
+          <text x="0" y="0" font-family="Arial" font-size="32" fill="white" text-anchor="middle" opacity="0.92">🧬</text>
+          <text x="0" y="38" 
+                font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif" 
+                font-size="24" 
+                font-weight="600" 
+                fill="white" 
+                text-anchor="middle" 
+                opacity="0.92">AI-Powered</text>
+        </g>
+        <g transform="translate(0, 0)">
+          <text x="0" y="0" font-family="Arial" font-size="32" fill="white" text-anchor="middle" opacity="0.92">⚛</text>
+          <text x="0" y="38" 
+                font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif" 
+                font-size="24" 
+                font-weight="600" 
+                fill="white" 
+                text-anchor="middle" 
+                opacity="0.92">Quantum ML</text>
+        </g>
+        <g transform="translate(180, 0)">
+          <text x="0" y="0" font-family="Arial" font-size="32" fill="white" text-anchor="middle" opacity="0.92">💊</text>
+          <text x="0" y="38" 
+                font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif" 
+                font-size="24" 
+                font-weight="600" 
+                fill="white" 
+                text-anchor="middle" 
+                opacity="0.92">Drug Discovery</text>
+        </g>
+      </g>
+    </g>
+  </g>
+</svg>
