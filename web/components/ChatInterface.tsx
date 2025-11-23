@@ -82,7 +82,7 @@ export default function ChatInterface({ onAnalyzeSmiles }: ChatInterfaceProps) {
                     responseContent = 'I apologize, but I did not receive a valid response.';
                 }
             }
-            
+
             const assistantMessage: ChatMessage = {
                 role: 'assistant',
                 content: String(responseContent || 'I apologize, but I did not receive a valid response.'),
@@ -120,7 +120,7 @@ export default function ChatInterface({ onAnalyzeSmiles }: ChatInterfaceProps) {
         if (!onAnalyzeSmiles || !trimmedSmiles) {
             return;
         }
-        
+
         // Strict SMILES validation - must contain only valid SMILES characters
         // SMILES can contain: letters, numbers, @, +, -, [, ], (, ), =, #, and common elements
         const smilesPattern = /^[A-Za-z0-9@+\-\[\]()=#\.]+$/;
@@ -128,7 +128,7 @@ export default function ChatInterface({ onAnalyzeSmiles }: ChatInterfaceProps) {
             console.warn('Invalid SMILES string:', trimmedSmiles);
             return;
         }
-        
+
         // Only proceed if it looks like a valid SMILES (not chat text)
         // SMILES typically start with a capital letter (element) or lowercase (aromatic)
         const firstChar = trimmedSmiles[0];
@@ -136,7 +136,7 @@ export default function ChatInterface({ onAnalyzeSmiles }: ChatInterfaceProps) {
             console.warn('SMILES must start with a letter:', trimmedSmiles);
             return;
         }
-        
+
         onAnalyzeSmiles(trimmedSmiles);
     };
 
@@ -150,13 +150,37 @@ export default function ChatInterface({ onAnalyzeSmiles }: ChatInterfaceProps) {
                         className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
                     >
                         <div
-                            className={`max-w-[80%] rounded-lg px-4 py-2 ${
-                                msg.role === 'user'
+                            className={`max-w-[80%] rounded-lg px-4 py-2 ${msg.role === 'user'
                                     ? 'bg-blue-600 text-white'
                                     : 'bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-100'
-                            }`}
+                                }`}
                         >
-                            <p className="whitespace-pre-wrap text-sm">{msg.content}</p>
+                            <div className="whitespace-pre-wrap text-sm">
+                                {msg.role === 'user' ? (
+                                    msg.content
+                                ) : (
+                                    msg.content.split(/(`[^`]+`)/g).map((part, i) => {
+                                        if (part.startsWith('`') && part.endsWith('`')) {
+                                            const smiles = part.slice(1, -1);
+                                            // Basic validation: length > 1 and no spaces (SMILES usually don't have spaces)
+                                            if (smiles.length > 1 && !smiles.includes(' ')) {
+                                                return (
+                                                    <button
+                                                        key={i}
+                                                        onClick={() => handleAnalyze(smiles)}
+                                                        className="mx-1 px-1.5 py-0.5 bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 rounded text-xs font-mono hover:bg-blue-200 dark:hover:bg-blue-800 transition-colors inline-flex items-center gap-1 align-middle"
+                                                        title="Analyze this molecule"
+                                                    >
+                                                        {smiles}
+                                                        <Beaker className="w-3 h-3" />
+                                                    </button>
+                                                );
+                                            }
+                                        }
+                                        return <span key={i}>{part}</span>;
+                                    })
+                                )}
+                            </div>
 
                             {/* Suggested SMILES */}
                             {msg.suggestedSmiles && msg.suggestedSmiles.length > 0 && (

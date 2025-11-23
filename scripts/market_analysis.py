@@ -6,6 +6,10 @@ import time
 from rdkit import Chem
 from rdkit.Chem import Descriptors, DataStructs
 from rdkit.Chem.Fingerprints import FingerprintMols
+try:
+    from openai import OpenAI
+except ImportError:
+    OpenAI = None
 
 # Public API endpoints
 PUBCHEM_BASE = "https://pubchem.ncbi.nlm.nih.gov/rest/pug"
@@ -163,6 +167,72 @@ def search_patents_pubchem(smiles):
         print(f"Patent search error: {e}", file=sys.stderr)
     return []
 
+def get_ai_market_analysis(smiles):
+    """Generate market analysis using OpenAI GPT-4o"""
+    try:
+        if OpenAI is None:
+            return None
+            
+        api_key = os.environ.get("OPENAI_API_KEY")
+        if not api_key:
+            return None
+            
+        client = OpenAI(api_key=api_key)
+        
+        prompt = f"""
+        Analyze the market potential, competitors, and patents for the molecule with SMILES: {smiles}
+        
+        Provide the output in the following JSON format:
+        {{
+            "competitors": [
+                {{
+                    "name": "Drug Name",
+                    "smiles": "SMILES",
+                    "similarity": 0.9,
+                    "indication": "Indication",
+                    "status": "Approved/Phase III",
+                    "company": "Company Name"
+                }}
+            ],
+            "patents": [
+                {{
+                    "patentNumber": "US1234567",
+                    "title": "Patent Title",
+                    "filingDate": "YYYY-MM-DD",
+                    "status": "Active/Expired",
+                    "assignee": "Company Name",
+                    "relevance": "High/Medium/Low"
+                }}
+            ],
+            "marketSize": {{
+                "therapeuticArea": "Therapeutic Area",
+                "estimatedMarketSize": "10.5B",
+                "currency": "USD",
+                "year": 2024,
+                "growthRate": "5.5%"
+            }},
+            "regulatoryStatus": "Favorable/Moderate/Challenging"
+        }}
+        
+        Ensure the data is realistic and relevant to the molecule's structure and likely therapeutic use.
+        """
+        
+        response = client.chat.completions.create(
+            model="gpt-4o",
+            messages=[
+                {"role": "system", "content": "You are a pharmaceutical market analyst expert."},
+                {"role": "user", "content": prompt}
+            ],
+            response_format={"type": "json_object"}
+        )
+        
+        content = response.choices[0].message.content
+        return json.loads(content)
+        
+    except Exception as e:
+        print(f"AI market analysis error: {e}", file=sys.stderr)
+        return None
+
 def get_therapeutic_area_from_pubchem(smiles):
     """Try to determine therapeutic area from PubChem bioactivity data"""
     try:
@@ -239,19 +309,6 @@ def get_market_analysis(smiles, molecule_name=None):
         # Search for patents from PubChem
         patents = search_patents_pubchem(smiles)
         
-        # If no patents found, generate placeholder based on properties
-        if not patents:
-            if mw < 300:
-                patents.append({
-                    "patentNumber": "Search USPTO for related patents",
-                    "title": "Small molecule therapeutic compounds",
-                    "filingDate": "Unknown",
-                    "status": "Unknown",
-                    "assignee": "Unknown",
-                    "relevance": "Medium",
-                    "source": "Heuristic"
-                })
-        
         # Determine therapeutic area
         therapeutic_area = get_therapeutic_area_from_pubchem(smiles)
         
@@ -273,6 +330,29 @@ def get_market_analysis(smiles, molecule_name=None):
             regulatory_status = "Moderate - Some optimization may be needed"
         else:
             regulatory_status = "Challenging - Significant optimization required"
+            
+        # AI Fallback/Enhancement
+        # If we have missing data, try to get it from AI
+        if not competitors or not patents:
+            ai_data = get_ai_market_analysis(smiles)
+            if ai_data:
+                if not competitors and "competitors" in ai_data:
+                    competitors = ai_data["competitors"]
+                    for comp in competitors:
+                        comp["source"] = "AI Analysis"
+                        
+                if not patents and "patents" in ai_data:
+                    patents = ai_data["patents"]
+                    for pat in patents:
+                        pat["source"] = "AI Analysis"
+                        
+                if "marketSize" in ai_data:
+                    market_info_ai = ai_data["marketSize"]
+                    therapeutic_area = market_info_ai.get("therapeuticArea", therapeutic_area)
+                    market_info = {
+                        "size": market_info_ai.get("estimatedMarketSize", market_info["size"]),
+                        "growth": market_info_ai.get("growthRate", market_info["growth"])
+                    }
         
         return {
             "competitors": competitors,
@@ -285,8 +365,14 @@ def get_market_analysis(smiles, molecule_name=None):
                 "growthRate": market_info["growth"]
             },
             "regulatoryStatus": regulatory_status,
-            "dataSource": "PubChem, ChEMBL"
+            "dataSource": "PubChem, ChEMBL, AI Analysis"
         }
+        
+    except Exception as e:
+        print(f"Market analysis error: {e}", file=sys.stderr)
+        import traceback
+        print(traceback.format_exc(), file=sys.stderr)
+        return None
         
     except Exception as e:
         print(f"Market analysis error: {e}", file=sys.stderr)

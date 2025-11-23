@@ -30,6 +30,7 @@ async function callOpenAIAPI(message: string, context?: Array<{ role: string; co
 
 When generating SMILES strings:
 - Always return valid, syntactically correct SMILES notation
+- Format SMILES strings using backticks (e.g., `CCO`) so they can be easily identified
 - Consider drug-likeness principles (MW < 500, LogP < 5, etc.)
 - Suggest molecules relevant to the therapeutic area mentioned
 - Provide 3-5 diverse candidate structures when possible
