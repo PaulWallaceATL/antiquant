@@ -12,9 +12,14 @@ import io
 import base64
 import sys
 import os
+import requests
+import time
 # Add scripts directory to path for relative imports
 sys.path.insert(0, os.path.dirname(__file__))
 from market_analysis import get_market_analysis
+
+# Public API endpoints
+PUBCHEM_BASE = "https://pubchem.ncbi.nlm.nih.gov/rest/pug"
 
 # Load configuration
 OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY")
@@ -130,8 +135,42 @@ def calculate_drug_likeness(mol):
         print(f"Drug-likeness calculation error: {e}", file=sys.stderr)
         return None
 
+def get_pubchem_data(smiles):
+    """Fetch additional data from PubChem for the molecule"""
+    try:
+        # Get PubChem CID
+        url = f"{PUBCHEM_BASE}/compound/smiles/{smiles}/cids/JSON"
+        response = requests.get(url, timeout=5)
+        
+        if response.status_code == 200:
+            data = response.json()
+            if "IdentifierList" in data and "CID" in data["IdentifierList"] and len(data["IdentifierList"]["CID"]) > 0:
+                cid = data["IdentifierList"]["CID"][0]
+                
+                # Get compound properties
+                props_url = f"{PUBCHEM_BASE}/compound/cid/{cid}/property/IUPACName,CanonicalSMILES,IsomericSMILES,Title,Synonym/JSON"
+                props_response = requests.get(props_url, timeout=5)
+                
+                pubchem_data = {
+                    "pubchem_cid": str(cid),
+                    "pubchem_url": f"https://pubchem.ncbi.nlm.nih.gov/compound/{cid}"
+                }
+                
+                if props_response.status_code == 200:
+                    props_data = props_response.json()
+                    if "PropertyTable" in props_data and "Properties" in props_data["PropertyTable"]:
+                        props = props_data["PropertyTable"]["Properties"][0]
+                        pubchem_data["iupac_name"] = props.get("IUPACName", "")
+                        pubchem_data["title"] = props.get("Title", "")
+                        pubchem_data["synonyms"] = props.get("Synonym", [])[:5] if props.get("Synonym") else []
+                
+                return pubchem_data
+    except Exception as e:
+        print(f"PubChem data fetch error: {e}", file=sys.stderr)
+    return None
+
 def extract_molecular_features(smiles):
-    """Extract molecular descriptors from SMILES"""
+    """Extract molecular descriptors from SMILES and enhance with PubChem data"""
     try:
         mol = Chem.MolFromSmiles(smiles)
         if mol is None:
@@ -147,6 +186,18 @@ def extract_molecular_features(smiles):
             "tpsa": float(Descriptors.TPSA(mol)),
             "num_atoms": int(mol.GetNumAtoms())
         }
+        
+        # Enhance with PubChem data (non-blocking)
+        try:
+            pubchem_data = get_pubchem_data(smiles)
+            if pubchem_data:
+                features["pubchem_cid"] = pubchem_data.get("pubchem_cid")
+                features["pubchem_url"] = pubchem_data.get("pubchem_url")
+                features["iupac_name"] = pubchem_data.get("iupac_name", "")
+                features["molecule_name"] = pubchem_data.get("title", "")
+                features["synonyms"] = pubchem_data.get("synonyms", [])
+        except Exception as e:
+            print(f"PubChem enhancement error (non-fatal): {e}", file=sys.stderr)
         
         return features
         

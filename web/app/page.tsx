@@ -537,6 +537,44 @@ export default function Home() {
                           </tr>
                         </thead>
                         <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
+                          {displayData.features.pubchem_cid && (
+                            <tr className="bg-blue-50 dark:bg-blue-900/20">
+                              <td className="px-4 sm:px-6 py-3">
+                                <div className="flex items-center gap-2">
+                                  PubChem CID
+                                </div>
+                              </td>
+                              <td className="px-4 sm:px-6 py-3 text-right">
+                                {displayData.features.pubchem_url ? (
+                                  <a href={displayData.features.pubchem_url} target="_blank" rel="noopener noreferrer" className="font-mono text-blue-600 dark:text-blue-400 hover:underline">
+                                    {displayData.features.pubchem_cid}
+                                  </a>
+                                ) : (
+                                  <span className="font-mono">{displayData.features.pubchem_cid}</span>
+                                )}
+                              </td>
+                            </tr>
+                          )}
+                          {displayData.features.iupac_name && (
+                            <tr>
+                              <td className="px-4 sm:px-6 py-3">
+                                <div className="flex items-center gap-2">
+                                  IUPAC Name
+                                </div>
+                              </td>
+                              <td className="px-4 sm:px-6 py-3 text-right text-xs sm:text-sm break-words">{displayData.features.iupac_name}</td>
+                            </tr>
+                          )}
+                          {displayData.features.molecule_name && (
+                            <tr>
+                              <td className="px-4 sm:px-6 py-3">
+                                <div className="flex items-center gap-2">
+                                  Common Name
+                                </div>
+                              </td>
+                              <td className="px-4 sm:px-6 py-3 text-right font-medium">{displayData.features.molecule_name}</td>
+                            </tr>
+                          )}
                           <tr>
                             <td className="px-4 sm:px-6 py-3">
                             <div className="flex items-center gap-2">
@@ -609,6 +647,24 @@ export default function Home() {
                           </td>
                           <td className="px-4 sm:px-6 py-3 text-right font-mono">{displayData.features.num_atoms}</td>
                         </tr>
+                        {displayData.features.synonyms && displayData.features.synonyms.length > 0 && (
+                          <tr>
+                            <td className="px-4 sm:px-6 py-3">
+                              <div className="flex items-center gap-2">
+                                Synonyms
+                              </div>
+                            </td>
+                            <td className="px-4 sm:px-6 py-3 text-right text-xs sm:text-sm">
+                              <div className="flex flex-wrap gap-1 justify-end">
+                                {displayData.features.synonyms.slice(0, 5).map((syn, idx) => (
+                                  <span key={idx} className="px-2 py-0.5 bg-gray-100 dark:bg-gray-800 rounded text-[10px] sm:text-xs">
+                                    {syn}
+                                  </span>
+                                ))}
+                              </div>
+                            </td>
+                          </tr>
+                        )}
                         </tbody>
                       </table>
                     </div>

@@ -43,6 +43,11 @@ export interface MolecularFeatures {
     num_aromatic_rings: number;
     tpsa: number;
     num_atoms: number;
+    pubchem_cid?: string;
+    pubchem_url?: string;
+    iupac_name?: string;
+    molecule_name?: string;
+    synonyms?: string[];
 }
 
 export interface PredictionResult {
