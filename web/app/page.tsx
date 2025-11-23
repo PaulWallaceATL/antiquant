@@ -13,12 +13,12 @@ import ExportButton from '../components/ExportButton';
 import InfoTooltip from '../components/InfoTooltip';
 import { TOOLTIPS } from '../lib/tooltips';
 
-// UI components
+// UI components - Mobile Optimized
 const Button = ({ children, onClick, disabled, className, variant = 'primary' }: any) => (
   <button
     onClick={onClick}
     disabled={disabled}
-    className={`px-4 py-2 rounded-md font-medium transition-all flex items-center gap-2 ${disabled ? 'opacity-50 cursor-not-allowed' : 'hover:scale-105 active:scale-95'
+    className={`px-3 sm:px-4 py-2.5 sm:py-2 rounded-md font-medium transition-all flex items-center justify-center gap-2 min-h-[44px] touch-manipulation ${disabled ? 'opacity-50 cursor-not-allowed' : 'hover:scale-105 active:scale-95'
       } ${variant === 'primary'
         ? 'bg-blue-600 text-white hover:bg-blue-700 shadow-lg shadow-blue-500/50'
         : variant === 'compare'
@@ -134,61 +134,132 @@ export default function Home() {
     }, 100);
   };
 
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
   return (
-    <div className="h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-gray-950 dark:via-gray-900 dark:to-blue-950 text-gray-900 dark:text-gray-100 overflow-hidden">
-      {/* Header */}
-      <header className="border-b border-gray-200 dark:border-gray-800 bg-white/80 dark:bg-gray-900/80 backdrop-blur-lg px-6 py-4">
-        <div className="flex justify-between items-center">
-          <div className="flex items-center gap-3">
-            <Pill className="w-8 h-8 text-blue-600 dark:text-blue-400" />
-            <div>
-              <h1 className="text-2xl font-bold tracking-tight">MoleculeAI</h1>
-              <p className="text-xs text-gray-600 dark:text-gray-400">Quantum-Enhanced Drug Discovery</p>
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-gray-950 dark:via-gray-900 dark:to-blue-950 text-gray-900 dark:text-gray-100 overflow-x-hidden">
+      {/* Header - Mobile Responsive */}
+      <header className="border-b border-gray-200 dark:border-gray-800 bg-white/95 dark:bg-gray-900/95 backdrop-blur-lg sticky top-0 z-40 shadow-sm">
+        <div className="px-4 sm:px-6 py-3 sm:py-4">
+          <div className="flex justify-between items-center">
+            <div className="flex items-center gap-2 sm:gap-3">
+              <Pill className="w-7 h-7 sm:w-8 sm:h-8 text-blue-600 dark:text-blue-400 flex-shrink-0" />
+              <div className="min-w-0">
+                <h1 className="text-xl sm:text-2xl font-bold tracking-tight truncate">MoleculeAI</h1>
+                <p className="text-[10px] sm:text-xs text-gray-600 dark:text-gray-400 truncate">Quantum-Enhanced Drug Discovery</p>
+              </div>
+            </div>
+            {/* Mobile Menu Toggle */}
+            <button
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              className="lg:hidden p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+              aria-label="Toggle menu"
+            >
+              {mobileMenuOpen ? (
+                <X className="w-6 h-6" />
+              ) : (
+                <Activity className="w-6 h-6" />
+              )}
+            </button>
+            {/* Desktop Buttons */}
+            <div className="hidden lg:flex gap-2 flex-wrap">
+              <Button
+                variant={mode === 'classical' ? 'primary' : 'secondary'}
+                onClick={() => setMode('classical')}
+                className="text-xs sm:text-sm"
+              >
+                <Layers className="w-4 h-4" /> <span className="hidden sm:inline">Classical</span>
+              </Button>
+              <Button
+                variant={mode === 'quantum' ? 'primary' : 'secondary'}
+                onClick={() => setMode('quantum')}
+                className={`text-xs sm:text-sm ${mode === 'quantum' ? 'bg-purple-600 hover:bg-purple-700 text-white shadow-lg shadow-purple-500/50' : ''}`}
+              >
+                <Atom className="w-4 h-4" /> <span className="hidden sm:inline">Quantum</span>
+              </Button>
+              <Button
+                variant={mode === 'compare' ? 'compare' : 'secondary'}
+                onClick={() => setMode('compare')}
+                className="text-xs sm:text-sm"
+              >
+                <GitCompare className="w-4 h-4" /> <span className="hidden sm:inline">Compare</span>
+              </Button>
+              <Button
+                variant={activeTab === 'editor' ? 'primary' : 'secondary'}
+                onClick={() => { setActiveTab('editor'); setMobileMenuOpen(false); }}
+                className="text-xs sm:text-sm"
+              >
+                <Beaker className="w-4 h-4" /> <span className="hidden xl:inline">Editor</span>
+              </Button>
+              {result && !result.error && (
+                <ExportButton analysis={result} />
+              )}
+              <Button
+                variant={showChat ? 'primary' : 'secondary'}
+                onClick={() => setShowChat(!showChat)}
+                className="text-xs sm:text-sm"
+              >
+                <MessageSquare className="w-4 h-4" /> <span className="hidden xl:inline">Chat</span>
+              </Button>
             </div>
           </div>
-          <div className="flex gap-2">
-            <Button
-              variant={mode === 'classical' ? 'primary' : 'secondary'}
-              onClick={() => setMode('classical')}
-            >
-              <Layers className="w-4 h-4" /> Classical
-            </Button>
-            <Button
-              variant={mode === 'quantum' ? 'primary' : 'secondary'}
-              onClick={() => setMode('quantum')}
-              className={mode === 'quantum' ? 'bg-purple-600 hover:bg-purple-700 text-white shadow-lg shadow-purple-500/50' : ''}
-            >
-              <Atom className="w-4 h-4" /> Quantum
-            </Button>
-            <Button
-              variant={mode === 'compare' ? 'compare' : 'secondary'}
-              onClick={() => setMode('compare')}
-            >
-              <GitCompare className="w-4 h-4" /> Compare
-            </Button>
-            <Button
-              variant={activeTab === 'editor' ? 'primary' : 'secondary'}
-              onClick={() => setActiveTab('editor')}
-            >
-              <Beaker className="w-4 h-4" /> Editor
-            </Button>
-            {result && !result.error && (
-              <ExportButton analysis={result} />
-            )}
-            <Button
-              variant={showChat ? 'primary' : 'secondary'}
-              onClick={() => setShowChat(!showChat)}
-            >
-              <MessageSquare className="w-4 h-4" /> Chat
-            </Button>
-          </div>
+          
+          {/* Mobile Menu */}
+          {mobileMenuOpen && (
+            <div className="lg:hidden mt-4 pt-4 border-t border-gray-200 dark:border-gray-800 space-y-2">
+              <div className="grid grid-cols-3 gap-2">
+                <Button
+                  variant={mode === 'classical' ? 'primary' : 'secondary'}
+                  onClick={() => { setMode('classical'); setMobileMenuOpen(false); }}
+                  className="text-xs py-2"
+                >
+                  <Layers className="w-4 h-4" /> Classical
+                </Button>
+                <Button
+                  variant={mode === 'quantum' ? 'primary' : 'secondary'}
+                  onClick={() => { setMode('quantum'); setMobileMenuOpen(false); }}
+                  className={`text-xs py-2 ${mode === 'quantum' ? 'bg-purple-600 hover:bg-purple-700 text-white' : ''}`}
+                >
+                  <Atom className="w-4 h-4" /> Quantum
+                </Button>
+                <Button
+                  variant={mode === 'compare' ? 'compare' : 'secondary'}
+                  onClick={() => { setMode('compare'); setMobileMenuOpen(false); }}
+                  className="text-xs py-2"
+                >
+                  <GitCompare className="w-4 h-4" /> Compare
+                </Button>
+              </div>
+              <div className="grid grid-cols-3 gap-2">
+                <Button
+                  variant={activeTab === 'editor' ? 'primary' : 'secondary'}
+                  onClick={() => { setActiveTab('editor'); setMobileMenuOpen(false); }}
+                  className="text-xs py-2"
+                >
+                  <Beaker className="w-4 h-4" /> Editor
+                </Button>
+                {result && !result.error && (
+                  <div className="col-span-1">
+                    <ExportButton analysis={result} />
+                  </div>
+                )}
+                <Button
+                  variant={showChat ? 'primary' : 'secondary'}
+                  onClick={() => { setShowChat(!showChat); setMobileMenuOpen(false); }}
+                  className="text-xs py-2"
+                >
+                  <MessageSquare className="w-4 h-4" /> Chat
+                </Button>
+              </div>
+            </div>
+          )}
         </div>
       </header>
 
-      {/* Main Content */}
-      <div className="h-[calc(100vh-89px)] grid grid-cols-5 gap-4 p-4">
+      {/* Main Content - Mobile Responsive */}
+      <div className="min-h-[calc(100vh-73px)] lg:h-[calc(100vh-73px)] flex flex-col lg:grid lg:grid-cols-5 gap-4 p-3 sm:p-4">
         {/* Left Panel - Input */}
-        <div className="col-span-1 space-y-4 overflow-y-auto">
+        <div className="lg:col-span-1 space-y-3 sm:space-y-4 overflow-y-auto max-h-[40vh] lg:max-h-none lg:min-h-0">
           <Card className="border-2 border-blue-100 dark:border-blue-900/50">
             <div className="bg-gradient-to-r from-blue-500 to-purple-600 px-3 py-2">
               <span className="text-xs font-semibold flex items-center gap-2 text-white">
@@ -200,8 +271,9 @@ export default function Home() {
               <textarea
                 value={smiles}
                 onChange={(e) => setSmiles(e.target.value)}
-                className="w-full h-32 bg-gray-50 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg p-3 font-mono text-sm focus:ring-2 focus:ring-blue-500 outline-none resize-none"
+                className="w-full h-24 sm:h-32 bg-gray-50 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg p-2 sm:p-3 font-mono text-xs sm:text-sm focus:ring-2 focus:ring-blue-500 outline-none resize-none touch-manipulation"
                 placeholder="Enter SMILES notation..."
+                aria-label="SMILES input"
               />
             </div>
           </Card>
@@ -213,10 +285,11 @@ export default function Home() {
                 <button
                   key={mol.smiles}
                   onClick={() => setSmiles(mol.smiles)}
-                  className="w-full px-2 py-2 bg-gray-100 dark:bg-gray-800 hover:bg-blue-100 dark:hover:bg-blue-900/30 rounded text-xs text-left transition-colors"
+                  className="w-full px-3 py-2.5 sm:py-2 bg-gray-100 dark:bg-gray-800 hover:bg-blue-100 dark:hover:bg-blue-900/30 active:bg-blue-200 dark:active:bg-blue-900/50 rounded text-xs text-left transition-colors touch-manipulation min-h-[44px]"
+                  aria-label={`Load ${mol.name} example`}
                 >
                   <div className="font-medium">{mol.name}</div>
-                  <div className="text-[10px] text-gray-500 dark:text-gray-400 font-mono truncate">{mol.smiles}</div>
+                  <div className="text-[10px] sm:text-[10px] text-gray-500 dark:text-gray-400 font-mono truncate">{mol.smiles}</div>
                 </button>
               ))}
             </div>
@@ -225,7 +298,8 @@ export default function Home() {
           <Button
             onClick={analyze}
             disabled={loading || !smiles}
-            className={`w-full py-3 text-sm ${mode === 'compare' ? 'bg-gradient-to-r from-blue-600 to-purple-600' : mode === 'quantum' ? 'bg-purple-600 hover:bg-purple-700' : ''}`}
+            className={`w-full py-3 sm:py-3 text-sm sm:text-sm min-h-[48px] ${mode === 'compare' ? 'bg-gradient-to-r from-blue-600 to-purple-600' : mode === 'quantum' ? 'bg-purple-600 hover:bg-purple-700' : ''}`}
+            aria-label={loading ? 'Analyzing molecule...' : 'Analyze molecule'}
           >
             {loading ? (
               <>
@@ -240,13 +314,13 @@ export default function Home() {
         </div>
 
         {/* Right Panel - Results */}
-        <div className="col-span-4 flex flex-col overflow-hidden">
+        <div className="lg:col-span-4 flex flex-col overflow-hidden min-h-0 flex-1">
           {result && !result.error && displayData ? (
             <>
               {/* Top: Result Summary */}
-              <div className="mb-4">
+              <div className="mb-3 sm:mb-4">
                 {mode === 'compare' ? (
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                     <Card className="p-4 bg-gradient-to-br from-blue-50 to-cyan-50 dark:from-blue-950/50 dark:to-cyan-950/50 border-2 border-blue-200 dark:border-blue-800">
                       <div className="flex justify-between items-start mb-3">
                         <div className="flex items-center gap-2">
@@ -255,7 +329,7 @@ export default function Home() {
                         </div>
                         <Badge variant="success">✓ {(displayData.classical.confidence * 100).toFixed(0)}%</Badge>
                       </div>
-                      <div className="text-5xl font-bold text-blue-600 dark:text-blue-400 mb-1">
+                      <div className="text-4xl sm:text-5xl font-bold text-blue-600 dark:text-blue-400 mb-1">
                         {displayData.classical.prediction}
                       </div>
                       <div className="text-sm text-gray-600 dark:text-gray-400">Log Solubility (mol/L)</div>
@@ -269,7 +343,7 @@ export default function Home() {
                         </div>
                         <Badge variant="purple">⚛ {(displayData.quantum.confidence * 100).toFixed(0)}%</Badge>
                       </div>
-                      <div className="text-5xl font-bold text-purple-600 dark:text-purple-400 mb-1">
+                      <div className="text-4xl sm:text-5xl font-bold text-purple-600 dark:text-purple-400 mb-1">
                         {displayData.quantum.prediction}
                       </div>
                       <div className="text-sm text-gray-600 dark:text-gray-400">Log Solubility (mol/L)</div>
@@ -279,7 +353,7 @@ export default function Home() {
                   <Card className="bg-gradient-to-br from-blue-50 to-purple-50 dark:from-blue-950/50 dark:to-purple-950/50 border-2 border-blue-200 dark:border-blue-800 p-4">
                     <div className="flex justify-between items-center">
                       <div>
-                        <div className="text-5xl font-bold text-blue-600 dark:text-blue-400 mb-1">
+                        <div className="text-4xl sm:text-5xl font-bold text-blue-600 dark:text-blue-400 mb-1">
                           {displayData.single.prediction}
                         </div>
                         <div className="text-sm text-gray-600 dark:text-gray-400">Log Solubility (mol/L)</div>
@@ -290,65 +364,65 @@ export default function Home() {
                 )}
               </div>
 
-              {/* Tabs */}
-              <div className="flex gap-2 mb-3 overflow-x-auto pb-1">
+              {/* Tabs - Mobile Scrollable */}
+              <div className="flex gap-1 sm:gap-2 mb-3 overflow-x-auto pb-1 scrollbar-hide -mx-3 sm:mx-0 px-3 sm:px-0 snap-x">
                 <button
                   onClick={() => setActiveTab('druglikeness')}
-                  className={`px-4 py-2 rounded-t-lg text-sm font-medium transition-colors whitespace-nowrap ${activeTab === 'druglikeness'
+                  className={`px-3 sm:px-4 py-2 rounded-t-lg text-xs sm:text-sm font-medium transition-colors whitespace-nowrap snap-start touch-manipulation ${activeTab === 'druglikeness'
                     ? 'bg-white dark:bg-gray-900 border-t border-x border-gray-200 dark:border-gray-800'
                     : 'bg-gray-100 dark:bg-gray-800 text-gray-600 hover:bg-gray-200'
                     }`}
                 >
-                  <Shield className="w-4 h-4 inline mr-1" /> Drug Likeness
+                  <Shield className="w-3 h-3 sm:w-4 sm:h-4 inline mr-1" /> <span className="hidden sm:inline">Drug </span>Likeness
                 </button>
                 <button
                   onClick={() => setActiveTab('3d')}
-                  className={`px-4 py-2 rounded-t-lg text-sm font-medium transition-colors whitespace-nowrap ${activeTab === '3d'
+                  className={`px-3 sm:px-4 py-2 rounded-t-lg text-xs sm:text-sm font-medium transition-colors whitespace-nowrap snap-start touch-manipulation ${activeTab === '3d'
                     ? 'bg-white dark:bg-gray-900 border-t border-x border-gray-200 dark:border-gray-800'
                     : 'bg-gray-100 dark:bg-gray-800 text-gray-600 hover:bg-gray-200'
                     }`}
                 >
-                  <Pill className="w-4 h-4 inline mr-1" /> 3D Structure
+                  <Pill className="w-3 h-3 sm:w-4 sm:h-4 inline mr-1" /> 3D
                 </button>
                 <button
                   onClick={() => setActiveTab('overview')}
-                  className={`px-4 py-2 rounded-t-lg text-sm font-medium transition-colors whitespace-nowrap ${activeTab === 'overview'
+                  className={`px-3 sm:px-4 py-2 rounded-t-lg text-xs sm:text-sm font-medium transition-colors whitespace-nowrap snap-start touch-manipulation ${activeTab === 'overview'
                     ? 'bg-white dark:bg-gray-900 border-t border-x border-gray-200 dark:border-gray-800'
                     : 'bg-gray-100 dark:bg-gray-800 text-gray-600 hover:bg-gray-200'
                     }`}
                 >
-                  <Activity className="w-4 h-4 inline mr-1" /> Overview
+                  <Activity className="w-3 h-3 sm:w-4 sm:h-4 inline mr-1" /> Overview
                 </button>
                 {mode === 'quantum' && displayData?.single?.quantum_circuit && (
                   <button
                     onClick={() => setActiveTab('circuit')}
-                    className={`px-4 py-2 rounded-t-lg text-sm font-medium transition-colors whitespace-nowrap ${activeTab === 'circuit'
+                    className={`px-3 sm:px-4 py-2 rounded-t-lg text-xs sm:text-sm font-medium transition-colors whitespace-nowrap snap-start touch-manipulation ${activeTab === 'circuit'
                       ? 'bg-white dark:bg-gray-900 border-t border-x border-gray-200 dark:border-gray-800'
                       : 'bg-gray-100 dark:bg-gray-800 text-gray-600 hover:bg-gray-200'
                       }`}
                   >
-                    <Atom className="w-4 h-4 inline mr-1" /> Quantum Circuit
-                    <InfoTooltip title={TOOLTIPS.quantumCircuit.title} content={TOOLTIPS.quantumCircuit.content} className="ml-1" />
+                    <Atom className="w-3 h-3 sm:w-4 sm:h-4 inline mr-1" /> <span className="hidden sm:inline">Quantum </span>Circuit
+                    <InfoTooltip title={TOOLTIPS.quantumCircuit.title} content={TOOLTIPS.quantumCircuit.content} className="ml-1 hidden sm:inline" />
                   </button>
                 )}
                 <button
                   onClick={() => setActiveTab('details')}
-                  className={`px-4 py-2 rounded-t-lg text-sm font-medium transition-colors whitespace-nowrap ${activeTab === 'details'
+                  className={`px-3 sm:px-4 py-2 rounded-t-lg text-xs sm:text-sm font-medium transition-colors whitespace-nowrap snap-start touch-manipulation ${activeTab === 'details'
                     ? 'bg-white dark:bg-gray-900 border-t border-x border-gray-200 dark:border-gray-800'
                     : 'bg-gray-100 dark:bg-gray-800 text-gray-600 hover:bg-gray-200'
                     }`}
                 >
-                  <Beaker className="w-4 h-4 inline mr-1" /> Details
+                  <Beaker className="w-3 h-3 sm:w-4 sm:h-4 inline mr-1" /> Details
                 </button>
                 {result?.marketAnalysis && (
                   <button
                     onClick={() => setActiveTab('market')}
-                    className={`px-4 py-2 rounded-t-lg text-sm font-medium transition-colors whitespace-nowrap ${activeTab === 'market'
+                    className={`px-3 sm:px-4 py-2 rounded-t-lg text-xs sm:text-sm font-medium transition-colors whitespace-nowrap snap-start touch-manipulation ${activeTab === 'market'
                       ? 'bg-white dark:bg-gray-900 border-t border-x border-gray-200 dark:border-gray-800'
                       : 'bg-gray-100 dark:bg-gray-800 text-gray-600 hover:bg-gray-200'
                       }`}
                   >
-                    <TrendingUp className="w-4 h-4 inline mr-1" /> Market
+                    <TrendingUp className="w-3 h-3 sm:w-4 sm:h-4 inline mr-1" /> Market
                   </button>
                 )}
               </div>
@@ -365,7 +439,7 @@ export default function Home() {
                       <Card className="p-4">
                         <h3 className="font-semibold mb-3 text-sm">Interactive 3D Molecular Structure</h3>
                         {mode === 'compare' ? (
-                          <div className="grid grid-cols-2 gap-4">
+                          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                             <Interactive3DViewer
                               sdf={result.structure_3d.sdf}
                               title="Classical"
@@ -402,7 +476,7 @@ export default function Home() {
                 )}
 
                 {activeTab === 'overview' && (
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                     <Card className="p-4">
                       <h3 className="font-semibold mb-4 text-sm">Molecular Profile</h3>
                       <ResponsiveContainer width="100%" height={250}>
@@ -449,88 +523,90 @@ export default function Home() {
 
                 {activeTab === 'details' && (
                   <Card className="overflow-hidden">
-                    <table className="w-full text-sm">
-                      <thead className="bg-gray-50 dark:bg-gray-800/30 text-gray-600 dark:text-gray-400">
-                        <tr>
-                          <th className="px-6 py-3 font-medium text-left">Property</th>
-                          <th className="px-6 py-3 font-medium text-right">Value</th>
-                        </tr>
-                      </thead>
-                      <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
-                        <tr>
-                          <td className="px-6 py-3">
+                    <div className="overflow-x-auto -mx-4 sm:mx-0">
+                      <table className="w-full text-sm min-w-full">
+                        <thead className="bg-gray-50 dark:bg-gray-800/30 text-gray-600 dark:text-gray-400">
+                          <tr>
+                            <th className="px-4 sm:px-6 py-3 font-medium text-left">Property</th>
+                            <th className="px-4 sm:px-6 py-3 font-medium text-right">Value</th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
+                          <tr>
+                            <td className="px-4 sm:px-6 py-3">
                             <div className="flex items-center gap-2">
                               Molecular Weight
                               <InfoTooltip title={TOOLTIPS.molecularWeight.title} content={TOOLTIPS.molecularWeight.content} />
                             </div>
                           </td>
-                          <td className="px-6 py-3 text-right font-mono">{displayData.features.molecular_weight.toFixed(2)}</td>
+                          <td className="px-4 sm:px-6 py-3 text-right font-mono">{displayData.features.molecular_weight.toFixed(2)}</td>
                         </tr>
                         <tr>
-                          <td className="px-6 py-3">
+                          <td className="px-4 sm:px-6 py-3">
                             <div className="flex items-center gap-2">
                               LogP
                               <InfoTooltip title={TOOLTIPS.logp.title} content={TOOLTIPS.logp.content} />
                             </div>
                           </td>
-                          <td className="px-6 py-3 text-right font-mono">{displayData.features.logp.toFixed(2)}</td>
+                          <td className="px-4 sm:px-6 py-3 text-right font-mono">{displayData.features.logp.toFixed(2)}</td>
                         </tr>
                         <tr>
-                          <td className="px-6 py-3">
+                          <td className="px-4 sm:px-6 py-3">
                             <div className="flex items-center gap-2">
                               H-Bond Donors
                               <InfoTooltip title={TOOLTIPS.hDonors.title} content={TOOLTIPS.hDonors.content} />
                             </div>
                           </td>
-                          <td className="px-6 py-3 text-right font-mono">{displayData.features.num_h_donors}</td>
+                          <td className="px-4 sm:px-6 py-3 text-right font-mono">{displayData.features.num_h_donors}</td>
                         </tr>
                         <tr>
-                          <td className="px-6 py-3">
+                          <td className="px-4 sm:px-6 py-3">
                             <div className="flex items-center gap-2">
                               H-Bond Acceptors
                               <InfoTooltip title={TOOLTIPS.hAcceptors.title} content={TOOLTIPS.hAcceptors.content} />
                             </div>
                           </td>
-                          <td className="px-6 py-3 text-right font-mono">{displayData.features.num_h_acceptors}</td>
+                          <td className="px-4 sm:px-6 py-3 text-right font-mono">{displayData.features.num_h_acceptors}</td>
                         </tr>
                         <tr>
-                          <td className="px-6 py-3">
+                          <td className="px-4 sm:px-6 py-3">
                             <div className="flex items-center gap-2">
                               Rotatable Bonds
                               <InfoTooltip title={TOOLTIPS.rotatableBonds.title} content={TOOLTIPS.rotatableBonds.content} />
                             </div>
                           </td>
-                          <td className="px-6 py-3 text-right font-mono">{displayData.features.num_rotatable_bonds}</td>
+                          <td className="px-4 sm:px-6 py-3 text-right font-mono">{displayData.features.num_rotatable_bonds}</td>
                         </tr>
                         <tr>
-                          <td className="px-6 py-3">
+                          <td className="px-4 sm:px-6 py-3">
                             <div className="flex items-center gap-2">
                               Aromatic Rings
                               <InfoTooltip title={TOOLTIPS.aromaticRings.title} content={TOOLTIPS.aromaticRings.content} />
                             </div>
                           </td>
-                          <td className="px-6 py-3 text-right font-mono">{displayData.features.num_aromatic_rings}</td>
+                          <td className="px-4 sm:px-6 py-3 text-right font-mono">{displayData.features.num_aromatic_rings}</td>
                         </tr>
                         <tr>
-                          <td className="px-6 py-3">
+                          <td className="px-4 sm:px-6 py-3">
                             <div className="flex items-center gap-2">
                               TPSA
                               <InfoTooltip title={TOOLTIPS.tpsa.title} content={TOOLTIPS.tpsa.content} />
                             </div>
                           </td>
-                          <td className="px-6 py-3 text-right font-mono">{displayData.features.tpsa.toFixed(2)}</td>
+                          <td className="px-4 sm:px-6 py-3 text-right font-mono">{displayData.features.tpsa.toFixed(2)}</td>
                         </tr>
                         <tr>
-                          <td className="px-6 py-3">
+                          <td className="px-4 sm:px-6 py-3">
                             <div className="flex items-center gap-2">
                               Total Atoms
                               <InfoTooltip title={TOOLTIPS.totalAtoms.title} content={TOOLTIPS.totalAtoms.content} />
                             </div>
                           </td>
-                          <td className="px-6 py-3 text-right font-mono">{displayData.features.num_atoms}</td>
+                          <td className="px-4 sm:px-6 py-3 text-right font-mono">{displayData.features.num_atoms}</td>
                         </tr>
-                      </tbody>
-                    </table>
+                        </tbody>
+                      </table>
+                    </div>
                   </Card>
                 )}
 
@@ -575,27 +651,27 @@ export default function Home() {
               </div>
             </>
           ) : result?.error ? (
-            <Card className="p-8 border-2 border-red-200 dark:border-red-900 flex items-center justify-center h-full">
-              <div className="text-red-600 dark:text-red-400 text-center">
-                <p className="font-semibold text-lg mb-2">Error</p>
-                <p className="text-sm">{result.error}</p>
+            <Card className="p-6 sm:p-8 border-2 border-red-200 dark:border-red-900 flex items-center justify-center h-full min-h-[300px]">
+              <div className="text-red-600 dark:text-red-400 text-center px-4">
+                <p className="font-semibold text-base sm:text-lg mb-2">Error</p>
+                <p className="text-xs sm:text-sm break-words">{result.error}</p>
               </div>
             </Card>
           ) : (
-            <div className="h-full flex flex-col items-center justify-center text-gray-400 border-2 border-dashed border-gray-300 dark:border-gray-700 rounded-lg">
-              <GitCompare className="w-20 h-20 mb-4 opacity-20" />
-              <p className="text-xl font-medium">Ready to Analyze</p>
-              <p className="text-sm mt-2">Enter a SMILES string and click {mode === 'compare' ? 'Compare Models' : 'Predict'}</p>
+            <div className="h-full flex flex-col items-center justify-center text-gray-400 border-2 border-dashed border-gray-300 dark:border-gray-700 rounded-lg p-6 sm:p-8">
+              <GitCompare className="w-16 h-16 sm:w-20 sm:h-20 mb-4 opacity-20" />
+              <p className="text-lg sm:text-xl font-medium text-center">Ready to Analyze</p>
+              <p className="text-xs sm:text-sm mt-2 text-center max-w-md">Enter a SMILES string and click {mode === 'compare' ? 'Compare Models' : 'Predict'}</p>
             </div>
           )}
         </div>
       </div>
 
-      {/* Chat Panel - Floating Overlay */}
+      {/* Chat Panel - Floating Overlay - Mobile Optimized */}
       {showChat && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm" onClick={() => setShowChat(false)}>
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-0 sm:p-4" onClick={() => setShowChat(false)}>
           <div 
-            className="w-full max-w-2xl h-[80vh] bg-white dark:bg-gray-900 rounded-lg shadow-2xl border border-gray-200 dark:border-gray-800 flex flex-col"
+            className="w-full h-full sm:w-full sm:max-w-2xl sm:h-[80vh] bg-white dark:bg-gray-900 sm:rounded-lg shadow-2xl border-0 sm:border border-gray-200 dark:border-gray-800 flex flex-col"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-800">
