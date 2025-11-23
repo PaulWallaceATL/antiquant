@@ -1,18 +1,29 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Play, Pill, Beaker, Layers, Zap, Atom } from 'lucide-react';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import { Play, Pill, Beaker, Layers, Atom, Activity, GitCompare, Shield, MessageSquare, TrendingUp, Download, X } from 'lucide-react';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar } from 'recharts';
+import QuantumCircuitVisualization from '../components/QuantumCircuitVisualization';
+import DrugLikenessDashboard from '../components/DrugLikenessDashboard';
+import Interactive3DViewer from '../components/Interactive3DViewer';
+import MolecularEditor from '../components/MolecularEditor';
+import ChatInterface from '../components/ChatInterface';
+import MarketAnalysisDashboard from '../components/MarketAnalysisDashboard';
+import ExportButton from '../components/ExportButton';
+import InfoTooltip from '../components/InfoTooltip';
+import { TOOLTIPS } from '../lib/tooltips';
 
-// Lightweight UI components
+// UI components
 const Button = ({ children, onClick, disabled, className, variant = 'primary' }: any) => (
   <button
     onClick={onClick}
     disabled={disabled}
-    className={`px-4 py-2 rounded-md font-medium transition-colors flex items-center gap-2 ${disabled ? 'opacity-50 cursor-not-allowed' : ''
+    className={`px-4 py-2 rounded-md font-medium transition-all flex items-center gap-2 ${disabled ? 'opacity-50 cursor-not-allowed' : 'hover:scale-105 active:scale-95'
       } ${variant === 'primary'
-        ? 'bg-blue-600 text-white hover:bg-blue-700'
-        : 'bg-gray-100 text-gray-900 hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-100'
+        ? 'bg-blue-600 text-white hover:bg-blue-700 shadow-lg shadow-blue-500/50'
+        : variant === 'compare'
+          ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white hover:from-blue-700 hover:to-purple-700 shadow-lg shadow-purple-500/50'
+          : 'bg-gray-100 text-gray-900 hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-100'
       } ${className}`}
   >
     {children}
@@ -29,8 +40,8 @@ const Badge = ({ children, variant = 'default' }: any) => {
   const colors = {
     default: 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200',
     success: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200',
-    warning: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200',
     info: 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200',
+    purple: 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200',
   };
   return (
     <span className={`px-2.5 py-0.5 rounded-full text-xs font-medium ${colors[variant as keyof typeof colors]}`}>
@@ -40,22 +51,31 @@ const Badge = ({ children, variant = 'default' }: any) => {
 };
 
 export default function Home() {
-  const [smiles, setSmiles] = useState<string>('CCO');  // Ethanol
+  const [smiles, setSmiles] = useState<string>('CCO');
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<any>(null);
-  const [mode, setMode] = useState<'classical' | 'quantum'>('classical');
+  const [mode, setMode] = useState<'classical' | 'quantum' | 'compare'>('compare');
+
+
+  const [activeTab, setActiveTab] = useState<'druglikeness' | '3d' | 'overview' | 'circuit' | 'details' | 'editor' | 'chat' | 'market'>('druglikeness');
+  const [showChat, setShowChat] = useState(false);
 
   const analyze = async () => {
     setLoading(true);
+    setResult(null);
     try {
-      const endpoint = mode === 'classical' ? '/api/analyze' : '/api/analyze-quantum';
+      const endpoint = mode === 'compare' ? '/api/compare' : mode === 'quantum' ? '/api/analyze-quantum' : '/api/analyze';
       const res = await fetch(endpoint, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ smiles }),
       });
       const data = await res.json();
+      console.log("API Response:", data);
+      console.log("structure_3d exists?", !!data.structure_3d);
+      console.log("structure_3d content:", data.structure_3d);
       setResult(data);
+      setActiveTab('druglikeness');
     } catch (error) {
       console.error(error);
       alert('Analysis failed');
@@ -71,69 +91,132 @@ export default function Home() {
     { name: 'Benzene', smiles: 'c1ccccc1' },
   ];
 
+  // Helper to get result data based on mode
+  const getDisplayData = () => {
+    if (!result || result.error) return null;
+
+    if (mode === 'compare') {
+      return { classical: result.classical, quantum: result.quantum, features: result.features };
+    } else {
+      return { single: result, features: result.features };
+    }
+  };
+
+  const displayData = getDisplayData();
+
+  const handleChatAnalyze = (smilesToAnalyze: string) => {
+    // Strict validation - only accept valid SMILES strings
+    const trimmed = smilesToAnalyze.trim();
+    if (!trimmed || trimmed.length < 2) {
+      return;
+    }
+    
+    // Must be valid SMILES pattern
+    const smilesPattern = /^[A-Za-z0-9@+\-\[\]()=#\.]+$/;
+    if (!smilesPattern.test(trimmed)) {
+      console.warn('Invalid SMILES format:', trimmed);
+      return;
+    }
+    
+    // Must start with a letter (element symbol)
+    if (!/[A-Za-z]/.test(trimmed[0])) {
+      console.warn('SMILES must start with a letter:', trimmed);
+      return;
+    }
+    
+    // Only update if it passes all validation
+    setSmiles(trimmed);
+    setShowChat(false); // Close chat when analyzing
+    setActiveTab('druglikeness');
+    // Trigger analysis
+    setTimeout(() => {
+      analyze();
+    }, 100);
+  };
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-gray-950 dark:via-gray-900 dark:to-blue-950 text-gray-900 dark:text-gray-100 p-8 font-sans">
-      <header className="mb-8 flex justify-between items-start">
-        <div>
-          <h1 className="text-4xl font-bold tracking-tight flex items-center gap-3 mb-2">
-            <Pill className="w-10 h-10 text-blue-600 dark:text-blue-400" />
-            MoleculeAI
-          </h1>
-          <p className="text-gray-600 dark:text-gray-400 text-lg">
-            Hybrid Classical-Quantum Molecular Property Predictor
-          </p>
-          <p className="text-sm text-gray-500 dark:text-gray-500 mt-1">
-            Predicting Log Solubility (mol/L) using XGBoost + Quantum VQC
-          </p>
-        </div>
-        <div className="flex gap-2">
-          <Button
-            variant={mode === 'classical' ? 'primary' : 'secondary'}
-            onClick={() => setMode('classical')}
-          >
-            <Layers className="w-4 h-4" /> Classical
-          </Button>
-          <Button
-            variant={mode === 'quantum' ? 'primary' : 'secondary'}
-            onClick={() => setMode('quantum')}
-            className={mode === 'quantum' ? 'bg-purple-600 hover:bg-purple-700 text-white' : ''}
-          >
-            <Atom className="w-4 h-4" /> Quantum
-          </Button>
+    <div className="h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-gray-950 dark:via-gray-900 dark:to-blue-950 text-gray-900 dark:text-gray-100 overflow-hidden">
+      {/* Header */}
+      <header className="border-b border-gray-200 dark:border-gray-800 bg-white/80 dark:bg-gray-900/80 backdrop-blur-lg px-6 py-4">
+        <div className="flex justify-between items-center">
+          <div className="flex items-center gap-3">
+            <Pill className="w-8 h-8 text-blue-600 dark:text-blue-400" />
+            <div>
+              <h1 className="text-2xl font-bold tracking-tight">MoleculeAI</h1>
+              <p className="text-xs text-gray-600 dark:text-gray-400">Quantum-Enhanced Drug Discovery</p>
+            </div>
+          </div>
+          <div className="flex gap-2">
+            <Button
+              variant={mode === 'classical' ? 'primary' : 'secondary'}
+              onClick={() => setMode('classical')}
+            >
+              <Layers className="w-4 h-4" /> Classical
+            </Button>
+            <Button
+              variant={mode === 'quantum' ? 'primary' : 'secondary'}
+              onClick={() => setMode('quantum')}
+              className={mode === 'quantum' ? 'bg-purple-600 hover:bg-purple-700 text-white shadow-lg shadow-purple-500/50' : ''}
+            >
+              <Atom className="w-4 h-4" /> Quantum
+            </Button>
+            <Button
+              variant={mode === 'compare' ? 'compare' : 'secondary'}
+              onClick={() => setMode('compare')}
+            >
+              <GitCompare className="w-4 h-4" /> Compare
+            </Button>
+            <Button
+              variant={activeTab === 'editor' ? 'primary' : 'secondary'}
+              onClick={() => setActiveTab('editor')}
+            >
+              <Beaker className="w-4 h-4" /> Editor
+            </Button>
+            {result && !result.error && (
+              <ExportButton analysis={result} />
+            )}
+            <Button
+              variant={showChat ? 'primary' : 'secondary'}
+              onClick={() => setShowChat(!showChat)}
+            >
+              <MessageSquare className="w-4 h-4" /> Chat
+            </Button>
+          </div>
         </div>
       </header>
 
-      <main className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        {/* Left Column: Input */}
-        <div className="space-y-4">
-          <Card className="overflow-hidden border-2 border-blue-100 dark:border-blue-900/50">
-            <div className="bg-gradient-to-r from-blue-500 to-purple-600 px-4 py-3 flex justify-between items-center">
-              <span className="text-sm font-semibold flex items-center gap-2 text-white">
-                <Beaker className="w-4 h-4" /> Enter SMILES String
+      {/* Main Content */}
+      <div className="h-[calc(100vh-89px)] grid grid-cols-5 gap-4 p-4">
+        {/* Left Panel - Input */}
+        <div className="col-span-1 space-y-4 overflow-y-auto">
+          <Card className="border-2 border-blue-100 dark:border-blue-900/50">
+            <div className="bg-gradient-to-r from-blue-500 to-purple-600 px-3 py-2">
+              <span className="text-xs font-semibold flex items-center gap-2 text-white">
+                <Beaker className="w-4 h-4" /> SMILES Input
+                <InfoTooltip title={TOOLTIPS.smiles.title} content={TOOLTIPS.smiles.content} className="text-white/80 hover:text-white" />
               </span>
-              <Badge variant="info">SMILES Format</Badge>
             </div>
-            <div className="p-4">
+            <div className="p-3">
               <textarea
                 value={smiles}
                 onChange={(e) => setSmiles(e.target.value)}
-                className="w-full h-32 bg-gray-50 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg p-4 font-mono text-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
-                placeholder="Enter SMILES notation (e.g., CCO for ethanol)"
+                className="w-full h-32 bg-gray-50 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg p-3 font-mono text-sm focus:ring-2 focus:ring-blue-500 outline-none resize-none"
+                placeholder="Enter SMILES notation..."
               />
             </div>
           </Card>
 
-          <Card className="p-4">
-            <h3 className="text-sm font-semibold mb-3 text-gray-700 dark:text-gray-300">Example Molecules</h3>
-            <div className="grid grid-cols-2 gap-2">
+          <Card className="p-3">
+            <h3 className="text-xs font-semibold mb-2 text-gray-700 dark:text-gray-300">Examples</h3>
+            <div className="space-y-2">
               {exampleMolecules.map((mol) => (
                 <button
                   key={mol.smiles}
                   onClick={() => setSmiles(mol.smiles)}
-                  className="px-3 py-2 bg-gray-100 dark:bg-gray-800 hover:bg-blue-100 dark:hover:bg-blue-900/30 rounded-md text-sm text-left transition-colors"
+                  className="w-full px-2 py-2 bg-gray-100 dark:bg-gray-800 hover:bg-blue-100 dark:hover:bg-blue-900/30 rounded text-xs text-left transition-colors"
                 >
                   <div className="font-medium">{mol.name}</div>
-                  <div className="text-xs text-gray-500 dark:text-gray-400 font-mono">{mol.smiles}</div>
+                  <div className="text-[10px] text-gray-500 dark:text-gray-400 font-mono truncate">{mol.smiles}</div>
                 </button>
               ))}
             </div>
@@ -142,145 +225,397 @@ export default function Home() {
           <Button
             onClick={analyze}
             disabled={loading || !smiles}
-            className={`w-full py-4 text-lg shadow-lg ${mode === 'quantum' ? 'bg-purple-600 hover:bg-purple-700' : ''}`}
+            className={`w-full py-3 text-sm ${mode === 'compare' ? 'bg-gradient-to-r from-blue-600 to-purple-600' : mode === 'quantum' ? 'bg-purple-600 hover:bg-purple-700' : ''}`}
           >
-            {loading ? 'Analyzing...' : (
+            {loading ? (
               <>
-                <Play className="w-5 h-5" /> Predict Solubility
+                <Activity className="w-4 h-4 animate-spin" /> Analyzing...
+              </>
+            ) : (
+              <>
+                <Play className="w-4 h-4" /> {mode === 'compare' ? 'Compare Models' : 'Predict'}
               </>
             )}
           </Button>
         </div>
 
-        {/* Right Column: Results */}
-        <div className="space-y-6">
-          {result ? (
-            result.error ? (
-              <Card className="p-6 border-2 border-red-200 dark:border-red-900">
-                <div className="text-red-600 dark:text-red-400 text-center">
-                  <p className="font-semibold">Error</p>
-                  <p className="text-sm mt-2">{result.error}</p>
-                </div>
-              </Card>
-            ) : (
-              <>
-                {/* Main Prediction Card */}
-                <Card className="p-6 bg-gradient-to-br from-blue-50 to-purple-50 dark:from-blue-950/50 dark:to-purple-950/50 border-2 border-blue-200 dark:border-blue-800">
-                  <h3 className="text-sm font-medium text-gray-600 dark:text-gray-400 uppercase tracking-wider mb-4">Prediction Result</h3>
-                  <div className="flex items-end gap-4 mb-6">
-                    <div className="text-6xl font-bold text-blue-600 dark:text-blue-400">
-                      {result.prediction}
-                    </div>
-                    <div className="text-lg text-gray-600 dark:text-gray-400 mb-2">
-                      Log(mol/L)
-                    </div>
-                  </div>
+        {/* Right Panel - Results */}
+        <div className="col-span-4 flex flex-col overflow-hidden">
+          {result && !result.error && displayData ? (
+            <>
+              {/* Top: Result Summary */}
+              <div className="mb-4">
+                {mode === 'compare' ? (
+                  <div className="grid grid-cols-2 gap-4">
+                    <Card className="p-4 bg-gradient-to-br from-blue-50 to-cyan-50 dark:from-blue-950/50 dark:to-cyan-950/50 border-2 border-blue-200 dark:border-blue-800">
+                      <div className="flex justify-between items-start mb-3">
+                        <div className="flex items-center gap-2">
+                          <h3 className="text-xs font-medium text-gray-600 dark:text-gray-400 uppercase">Classical XGBoost</h3>
+                          <InfoTooltip title={TOOLTIPS.xgboost.title} content={TOOLTIPS.xgboost.content} />
+                        </div>
+                        <Badge variant="success">✓ {(displayData.classical.confidence * 100).toFixed(0)}%</Badge>
+                      </div>
+                      <div className="text-5xl font-bold text-blue-600 dark:text-blue-400 mb-1">
+                        {displayData.classical.prediction}
+                      </div>
+                      <div className="text-sm text-gray-600 dark:text-gray-400">Log Solubility (mol/L)</div>
+                    </Card>
 
-                  <div className="space-y-2 text-sm">
-                    <div className="flex justify-between">
-                      <span className="text-gray-600 dark:text-gray-400">Property:</span>
-                      <span className="font-medium">{result.property}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-gray-600 dark:text-gray-400">Model:</span>
-                      <Badge variant={mode === 'quantum' ? 'info' : 'success'}>{result.model_used}</Badge>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-gray-600 dark:text-gray-400">SMILES:</span>
-                      <span className="font-mono text-xs">{result.smiles}</span>
-                    </div>
+                    <Card className="p-4 bg-gradient-to-br from-purple-50 to-pink-50 dark:from-purple-950/50 dark:to-pink-950/50 border-2 border-purple-200 dark:border-purple-800">
+                      <div className="flex justify-between items-start mb-3">
+                        <div className="flex items-center gap-2">
+                          <h3 className="text-xs font-medium text-gray-600 dark:text-gray-400 uppercase">Quantum VQC</h3>
+                          <InfoTooltip title={TOOLTIPS.vqc.title} content={TOOLTIPS.vqc.content} />
+                        </div>
+                        <Badge variant="purple">⚛ {(displayData.quantum.confidence * 100).toFixed(0)}%</Badge>
+                      </div>
+                      <div className="text-5xl font-bold text-purple-600 dark:text-purple-400 mb-1">
+                        {displayData.quantum.prediction}
+                      </div>
+                      <div className="text-sm text-gray-600 dark:text-gray-400">Log Solubility (mol/L)</div>
+                    </Card>
                   </div>
-                </Card>
+                ) : (
+                  <Card className="bg-gradient-to-br from-blue-50 to-purple-50 dark:from-blue-950/50 dark:to-purple-950/50 border-2 border-blue-200 dark:border-blue-800 p-4">
+                    <div className="flex justify-between items-center">
+                      <div>
+                        <div className="text-5xl font-bold text-blue-600 dark:text-blue-400 mb-1">
+                          {displayData.single.prediction}
+                        </div>
+                        <div className="text-sm text-gray-600 dark:text-gray-400">Log Solubility (mol/L)</div>
+                      </div>
+                      <Badge variant={mode === 'quantum' ? 'purple' : 'success'}>{displayData.single.model_used}</Badge>
+                    </div>
+                  </Card>
+                )}
+              </div>
 
-                {/* Molecular Features Table */}
-                <Card className="overflow-hidden">
-                  <div className="px-6 py-4 bg-gray-50 dark:bg-gray-800/50 border-b border-gray-200 dark:border-gray-700">
-                    <h3 className="font-semibold flex items-center gap-2">
-                      <Beaker className="w-4 h-4" /> Molecular Descriptors
-                    </h3>
+              {/* Tabs */}
+              <div className="flex gap-2 mb-3 overflow-x-auto pb-1">
+                <button
+                  onClick={() => setActiveTab('druglikeness')}
+                  className={`px-4 py-2 rounded-t-lg text-sm font-medium transition-colors whitespace-nowrap ${activeTab === 'druglikeness'
+                    ? 'bg-white dark:bg-gray-900 border-t border-x border-gray-200 dark:border-gray-800'
+                    : 'bg-gray-100 dark:bg-gray-800 text-gray-600 hover:bg-gray-200'
+                    }`}
+                >
+                  <Shield className="w-4 h-4 inline mr-1" /> Drug Likeness
+                </button>
+                <button
+                  onClick={() => setActiveTab('3d')}
+                  className={`px-4 py-2 rounded-t-lg text-sm font-medium transition-colors whitespace-nowrap ${activeTab === '3d'
+                    ? 'bg-white dark:bg-gray-900 border-t border-x border-gray-200 dark:border-gray-800'
+                    : 'bg-gray-100 dark:bg-gray-800 text-gray-600 hover:bg-gray-200'
+                    }`}
+                >
+                  <Pill className="w-4 h-4 inline mr-1" /> 3D Structure
+                </button>
+                <button
+                  onClick={() => setActiveTab('overview')}
+                  className={`px-4 py-2 rounded-t-lg text-sm font-medium transition-colors whitespace-nowrap ${activeTab === 'overview'
+                    ? 'bg-white dark:bg-gray-900 border-t border-x border-gray-200 dark:border-gray-800'
+                    : 'bg-gray-100 dark:bg-gray-800 text-gray-600 hover:bg-gray-200'
+                    }`}
+                >
+                  <Activity className="w-4 h-4 inline mr-1" /> Overview
+                </button>
+                {mode === 'quantum' && displayData?.single?.quantum_circuit && (
+                  <button
+                    onClick={() => setActiveTab('circuit')}
+                    className={`px-4 py-2 rounded-t-lg text-sm font-medium transition-colors whitespace-nowrap ${activeTab === 'circuit'
+                      ? 'bg-white dark:bg-gray-900 border-t border-x border-gray-200 dark:border-gray-800'
+                      : 'bg-gray-100 dark:bg-gray-800 text-gray-600 hover:bg-gray-200'
+                      }`}
+                  >
+                    <Atom className="w-4 h-4 inline mr-1" /> Quantum Circuit
+                    <InfoTooltip title={TOOLTIPS.quantumCircuit.title} content={TOOLTIPS.quantumCircuit.content} className="ml-1" />
+                  </button>
+                )}
+                <button
+                  onClick={() => setActiveTab('details')}
+                  className={`px-4 py-2 rounded-t-lg text-sm font-medium transition-colors whitespace-nowrap ${activeTab === 'details'
+                    ? 'bg-white dark:bg-gray-900 border-t border-x border-gray-200 dark:border-gray-800'
+                    : 'bg-gray-100 dark:bg-gray-800 text-gray-600 hover:bg-gray-200'
+                    }`}
+                >
+                  <Beaker className="w-4 h-4 inline mr-1" /> Details
+                </button>
+                {result?.marketAnalysis && (
+                  <button
+                    onClick={() => setActiveTab('market')}
+                    className={`px-4 py-2 rounded-t-lg text-sm font-medium transition-colors whitespace-nowrap ${activeTab === 'market'
+                      ? 'bg-white dark:bg-gray-900 border-t border-x border-gray-200 dark:border-gray-800'
+                      : 'bg-gray-100 dark:bg-gray-800 text-gray-600 hover:bg-gray-200'
+                      }`}
+                  >
+                    <TrendingUp className="w-4 h-4 inline mr-1" /> Market
+                  </button>
+                )}
+              </div>
+
+              {/* Tab Content */}
+              <div className="flex-1 overflow-y-auto">
+                {activeTab === 'druglikeness' && result.drug_likeness && (
+                  <DrugLikenessDashboard data={result.drug_likeness} />
+                )}
+
+                {activeTab === '3d' && (
+                  result.structure_3d ? (
+                    result.structure_3d.sdf ? (
+                      <Card className="p-4">
+                        <h3 className="font-semibold mb-3 text-sm">Interactive 3D Molecular Structure</h3>
+                        {mode === 'compare' ? (
+                          <div className="grid grid-cols-2 gap-4">
+                            <Interactive3DViewer
+                              sdf={result.structure_3d.sdf}
+                              title="Classical"
+                              viewerKey={`classical-${result.smiles}`}
+                            />
+                            <Interactive3DViewer
+                              sdf={result.structure_3d.sdf}
+                              title="Quantum"
+                              viewerKey={`quantum-${result.smiles}`}
+                            />
+                          </div>
+                        ) : (
+                          <Interactive3DViewer
+                            sdf={result.structure_3d.sdf}
+                            viewerKey={`single-${result.smiles}`}
+                          />
+                        )}
+                      </Card>
+                    ) : (
+                      <Card className="p-8 h-96 flex items-center justify-center">
+                        <div className="text-center text-gray-500">
+                          <p>No SDF data available</p>
+                        </div>
+                      </Card>
+                    )
+                  ) : (
+                    <Card className="p-8 h-96 flex items-center justify-center">
+                      <div className="text-center text-gray-500">
+                        <p className="font-semibold mb-2">No 3D Structure Data</p>
+                        <p className="text-sm">Check console for API response</p>
+                      </div>
+                    </Card>
+                  )
+                )}
+
+                {activeTab === 'overview' && (
+                  <div className="grid grid-cols-2 gap-4">
+                    <Card className="p-4">
+                      <h3 className="font-semibold mb-4 text-sm">Molecular Profile</h3>
+                      <ResponsiveContainer width="100%" height={250}>
+                        <RadarChart data={[
+                          { property: 'MW/100', value: displayData.features.molecular_weight / 100 },
+                          { property: 'LogP', value: Math.max(displayData.features.logp, 0) },
+                          { property: 'HBD', value: displayData.features.num_h_donors },
+                          { property: 'HBA', value: displayData.features.num_h_acceptors },
+                          { property: 'RotB', value: displayData.features.num_rotatable_bonds },
+                          { property: 'TPSA/50', value: displayData.features.tpsa / 50 },
+                        ]}>
+                          <PolarGrid stroke="#333" />
+                          <PolarAngleAxis dataKey="property" tick={{ fill: '#888', fontSize: 11 }} />
+                          <PolarRadiusAxis angle={90} domain={[0, 5]} tick={{ fill: '#888' }} />
+                          <Radar name="Value" dataKey="value" stroke={mode === 'quantum' ? '#9333ea' : '#2563eb'} fill={mode === 'quantum' ? '#9333ea' : '#2563eb'} fillOpacity={0.6} />
+                        </RadarChart>
+                      </ResponsiveContainer>
+                    </Card>
+
+                    <Card className="p-4">
+                      <h3 className="font-semibold mb-4 text-sm">Descriptor Values</h3>
+                      <ResponsiveContainer width="100%" height={250}>
+                        <BarChart data={[
+                          { name: 'MW/10', value: displayData.features.molecular_weight / 10 },
+                          { name: 'LogP', value: displayData.features.logp },
+                          { name: 'HBD', value: displayData.features.num_h_donors },
+                          { name: 'HBA', value: displayData.features.num_h_acceptors },
+                          { name: 'RotB', value: displayData.features.num_rotatable_bonds },
+                        ]}>
+                          <CartesianGrid strokeDasharray="3 3" stroke="#333" vertical={false} />
+                          <XAxis dataKey="name" stroke="#888" tick={{ fontSize: 11 }} />
+                          <YAxis stroke="#888" tick={{ fontSize: 11 }} />
+                          <Tooltip contentStyle={{ backgroundColor: '#1f2937', border: 'none', borderRadius: '8px' }} />
+                          <Bar dataKey="value" fill={mode === 'quantum' ? '#9333ea' : '#2563eb'} radius={[4, 4, 0, 0]} />
+                        </BarChart>
+                      </ResponsiveContainer>
+                    </Card>
                   </div>
-                  <div className="p-0">
-                    <table className="w-full text-sm text-left">
+                )}
+
+                {activeTab === 'circuit' && mode === 'quantum' && displayData.single?.quantum_circuit && (
+                  <QuantumCircuitVisualization circuit={displayData.single.quantum_circuit} />
+                )}
+
+                {activeTab === 'details' && (
+                  <Card className="overflow-hidden">
+                    <table className="w-full text-sm">
                       <thead className="bg-gray-50 dark:bg-gray-800/30 text-gray-600 dark:text-gray-400">
                         <tr>
-                          <th className="px-6 py-3 font-medium">Property</th>
+                          <th className="px-6 py-3 font-medium text-left">Property</th>
                           <th className="px-6 py-3 font-medium text-right">Value</th>
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
                         <tr>
-                          <td className="px-6 py-3">Molecular Weight</td>
-                          <td className="px-6 py-3 text-right font-mono">{result.features.molecular_weight.toFixed(2)}</td>
+                          <td className="px-6 py-3">
+                            <div className="flex items-center gap-2">
+                              Molecular Weight
+                              <InfoTooltip title={TOOLTIPS.molecularWeight.title} content={TOOLTIPS.molecularWeight.content} />
+                            </div>
+                          </td>
+                          <td className="px-6 py-3 text-right font-mono">{displayData.features.molecular_weight.toFixed(2)}</td>
                         </tr>
                         <tr>
-                          <td className="px-6 py-3">LogP</td>
-                          <td className="px-6 py-3 text-right font-mono">{result.features.logp.toFixed(2)}</td>
+                          <td className="px-6 py-3">
+                            <div className="flex items-center gap-2">
+                              LogP
+                              <InfoTooltip title={TOOLTIPS.logp.title} content={TOOLTIPS.logp.content} />
+                            </div>
+                          </td>
+                          <td className="px-6 py-3 text-right font-mono">{displayData.features.logp.toFixed(2)}</td>
                         </tr>
                         <tr>
-                          <td className="px-6 py-3">H-Bond Donors</td>
-                          <td className="px-6 py-3 text-right font-mono">{result.features.num_h_donors}</td>
+                          <td className="px-6 py-3">
+                            <div className="flex items-center gap-2">
+                              H-Bond Donors
+                              <InfoTooltip title={TOOLTIPS.hDonors.title} content={TOOLTIPS.hDonors.content} />
+                            </div>
+                          </td>
+                          <td className="px-6 py-3 text-right font-mono">{displayData.features.num_h_donors}</td>
                         </tr>
                         <tr>
-                          <td className="px-6 py-3">H-Bond Acceptors</td>
-                          <td className="px-6 py-3 text-right font-mono">{result.features.num_h_acceptors}</td>
+                          <td className="px-6 py-3">
+                            <div className="flex items-center gap-2">
+                              H-Bond Acceptors
+                              <InfoTooltip title={TOOLTIPS.hAcceptors.title} content={TOOLTIPS.hAcceptors.content} />
+                            </div>
+                          </td>
+                          <td className="px-6 py-3 text-right font-mono">{displayData.features.num_h_acceptors}</td>
                         </tr>
                         <tr>
-                          <td className="px-6 py-3">Rotatable Bonds</td>
-                          <td className="px-6 py-3 text-right font-mono">{result.features.num_rotatable_bonds}</td>
+                          <td className="px-6 py-3">
+                            <div className="flex items-center gap-2">
+                              Rotatable Bonds
+                              <InfoTooltip title={TOOLTIPS.rotatableBonds.title} content={TOOLTIPS.rotatableBonds.content} />
+                            </div>
+                          </td>
+                          <td className="px-6 py-3 text-right font-mono">{displayData.features.num_rotatable_bonds}</td>
                         </tr>
                         <tr>
-                          <td className="px-6 py-3">Aromatic Rings</td>
-                          <td className="px-6 py-3 text-right font-mono">{result.features.num_aromatic_rings}</td>
+                          <td className="px-6 py-3">
+                            <div className="flex items-center gap-2">
+                              Aromatic Rings
+                              <InfoTooltip title={TOOLTIPS.aromaticRings.title} content={TOOLTIPS.aromaticRings.content} />
+                            </div>
+                          </td>
+                          <td className="px-6 py-3 text-right font-mono">{displayData.features.num_aromatic_rings}</td>
                         </tr>
                         <tr>
-                          <td className="px-6 py-3">TPSA</td>
-                          <td className="px-6 py-3 text-right font-mono">{result.features.tpsa.toFixed(2)}</td>
+                          <td className="px-6 py-3">
+                            <div className="flex items-center gap-2">
+                              TPSA
+                              <InfoTooltip title={TOOLTIPS.tpsa.title} content={TOOLTIPS.tpsa.content} />
+                            </div>
+                          </td>
+                          <td className="px-6 py-3 text-right font-mono">{displayData.features.tpsa.toFixed(2)}</td>
                         </tr>
                         <tr>
-                          <td className="px-6 py-3">Total Atoms</td>
-                          <td className="px-6 py-3 text-right font-mono">{result.features.num_atoms}</td>
+                          <td className="px-6 py-3">
+                            <div className="flex items-center gap-2">
+                              Total Atoms
+                              <InfoTooltip title={TOOLTIPS.totalAtoms.title} content={TOOLTIPS.totalAtoms.content} />
+                            </div>
+                          </td>
+                          <td className="px-6 py-3 text-right font-mono">{displayData.features.num_atoms}</td>
                         </tr>
                       </tbody>
                     </table>
-                  </div>
-                </Card>
+                  </Card>
+                )}
 
-                {/* Chart */}
-                <Card className="p-6">
-                  <h3 className="font-semibold mb-6">Descriptor Visualization</h3>
-                  <div className="h-64 w-full">
-                    <ResponsiveContainer width="100%" height="100%">
-                      <BarChart data={[
-                        { name: 'MW/10', value: result.features.molecular_weight / 10 },
-                        { name: 'LogP', value: result.features.logp },
-                        { name: 'HBD', value: result.features.num_h_donors },
-                        { name: 'HBA', value: result.features.num_h_acceptors },
-                        { name: 'RotB', value: result.features.num_rotatable_bonds },
-                        { name: 'AromR', value: result.features.num_aromatic_rings },
-                      ]}>
-                        <CartesianGrid strokeDasharray="3 3" stroke="#333" vertical={false} />
-                        <XAxis dataKey="name" stroke="#888" />
-                        <YAxis stroke="#888" />
-                        <Tooltip
-                          contentStyle={{ backgroundColor: '#1f2937', border: 'none', borderRadius: '8px' }}
-                          itemStyle={{ color: '#fff' }}
-                        />
-                        <Bar dataKey="value" fill={mode === 'quantum' ? '#9333ea' : '#2563eb'} radius={[4, 4, 0, 0]} />
-                      </BarChart>
-                    </ResponsiveContainer>
-                  </div>
-                </Card>
-              </>
-            )
+                {activeTab === 'market' && result.marketAnalysis && (
+                  <MarketAnalysisDashboard data={result.marketAnalysis} />
+                )}
+
+                {activeTab === 'editor' && (
+                  <Card className="p-6">
+                    <MolecularEditor
+                      initialSmiles={smiles}
+                      onChange={(newSmiles) => {
+                        setSmiles(newSmiles);
+                        // Optionally auto-analyze when SMILES changes from editor
+                        // Uncomment if you want auto-analysis:
+                        // if (newSmiles && newSmiles.trim()) {
+                        //   setTimeout(() => analyze(), 500);
+                        // }
+                      }}
+                    />
+                    <div className="mt-4 flex gap-2">
+                      <Button
+                        onClick={() => {
+                          if (smiles && smiles.trim()) {
+                            analyze();
+                          }
+                        }}
+                        disabled={!smiles || !smiles.trim() || loading}
+                      >
+                        <Play className="w-4 h-4" />
+                        Analyze Current SMILES
+                      </Button>
+                      <Button
+                        variant="secondary"
+                        onClick={() => setSmiles('CCO')}
+                      >
+                        Reset to Example
+                      </Button>
+                    </div>
+                  </Card>
+                )}
+              </div>
+            </>
+          ) : result?.error ? (
+            <Card className="p-8 border-2 border-red-200 dark:border-red-900 flex items-center justify-center h-full">
+              <div className="text-red-600 dark:text-red-400 text-center">
+                <p className="font-semibold text-lg mb-2">Error</p>
+                <p className="text-sm">{result.error}</p>
+              </div>
+            </Card>
           ) : (
-            <div className="h-full flex flex-col items-center justify-center text-gray-400 border-2 border-dashed border-gray-300 dark:border-gray-700 rounded-lg p-12 min-h-[500px]">
-              <Zap className="w-16 h-16 mb-4 opacity-20" />
-              <p className="text-lg">Enter a SMILES string and run analysis</p>
-              <p className="text-sm mt-2">Try examples like CCO (ethanol) or c1ccccc1 (benzene)</p>
+            <div className="h-full flex flex-col items-center justify-center text-gray-400 border-2 border-dashed border-gray-300 dark:border-gray-700 rounded-lg">
+              <GitCompare className="w-20 h-20 mb-4 opacity-20" />
+              <p className="text-xl font-medium">Ready to Analyze</p>
+              <p className="text-sm mt-2">Enter a SMILES string and click {mode === 'compare' ? 'Compare Models' : 'Predict'}</p>
             </div>
           )}
         </div>
-      </main>
+      </div>
+
+      {/* Chat Panel - Floating Overlay */}
+      {showChat && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm" onClick={() => setShowChat(false)}>
+          <div 
+            className="w-full max-w-2xl h-[80vh] bg-white dark:bg-gray-900 rounded-lg shadow-2xl border border-gray-200 dark:border-gray-800 flex flex-col"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-800">
+              <div className="flex items-center gap-2">
+                <MessageSquare className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+                <h2 className="text-lg font-semibold">AI Assistant</h2>
+              </div>
+              <button
+                onClick={() => setShowChat(false)}
+                className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            <div className="flex-1 overflow-hidden">
+              <ChatInterface onAnalyzeSmiles={handleChatAnalyze} />
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
