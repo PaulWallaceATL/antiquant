@@ -15,7 +15,7 @@ export async function POST(request: Request) {
 
         console.log('[API /chat] Calling processChatMessage');
         const response = await processChatMessage(message, sessionId);
-        console.log('[API /chat] Got response:', { responseLength: response.response?.length, hasError: !!response.error });
+        console.log('[API /chat] Got response:', { responseLength: response.response?.length, sessionId: response.sessionId });
 
         return NextResponse.json(response);
     } catch (error: any) {
