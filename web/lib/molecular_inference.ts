@@ -1,6 +1,9 @@
 import { spawn } from 'child_process';
 import path from 'path';
 
+// Use Cloud Run API or fallback to local Python spawn for development
+const API_URL = process.env.MOLECULEAI_API_URL || process.env.NEXT_PUBLIC_MOLECULEAI_API_URL || '';
+const USE_CLOUD_RUN = !!API_URL;
 const INFERENCE_SCRIPT = path.join(process.cwd(), '../scripts/molecular_inference.py');
 
 export interface QuantumCircuit {
@@ -145,6 +148,33 @@ export interface MolecularAnalysisResult {
 }
 
 async function runInference(smiles: string, mode: 'classical' | 'quantum' | 'both'): Promise<MolecularAnalysisResult> {
+    // Use Cloud Run API if available
+    if (USE_CLOUD_RUN) {
+        try {
+            const response = await fetch(`${API_URL}/analyze`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ smiles, mode }),
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json().catch(() => ({ 
+                    error: `HTTP ${response.status}: ${response.statusText}` 
+                }));
+                throw new Error(errorData.detail || errorData.error || `HTTP ${response.status}`);
+            }
+
+            const result = await response.json();
+            return result;
+        } catch (error: any) {
+            console.error('Cloud Run API call failed:', error);
+            throw new Error(`Failed to analyze molecule: ${error.message}`);
+        }
+    }
+    
+    // Fallback to local Python spawn (for local development)
     return new Promise((resolve, reject) => {
         const pythonProcess = spawn('python3', [INFERENCE_SCRIPT]);
 
