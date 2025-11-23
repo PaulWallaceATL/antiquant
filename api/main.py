@@ -21,6 +21,7 @@ from scripts.molecular_inference import (
     predict_quantum
 )
 from scripts.market_analysis import get_market_analysis
+from scripts.chat_helpers import validate_smiles, find_similar
 from rdkit import Chem
 
 app = FastAPI(title="MoleculeAI API", version="1.0.0")
@@ -37,6 +38,13 @@ app.add_middleware(
 class AnalyzeRequest(BaseModel):
     smiles: str
     mode: Optional[Literal["classical", "quantum", "both"]] = "both"
+
+class ValidateRequest(BaseModel):
+    smiles: str
+
+class SimilarRequest(BaseModel):
+    smiles: str
+    limit: Optional[int] = 5
 
 @app.get("/")
 def root():
@@ -133,6 +141,24 @@ async def analyze_quantum(request: AnalyzeRequest):
     """Quantum VQC prediction only"""
     request.mode = "quantum"
     return await analyze(request)
+
+@app.post("/validate")
+async def validate(request: ValidateRequest):
+    """Validate SMILES string"""
+    try:
+        is_valid = validate_smiles(request.smiles)
+        return {"valid": is_valid}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.post("/similar")
+async def similar(request: SimilarRequest):
+    """Find similar molecules"""
+    try:
+        results = find_similar(request.smiles, top_k=request.limit)
+        return results
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 if __name__ == "__main__":
     import uvicorn

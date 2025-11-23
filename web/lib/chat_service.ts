@@ -3,6 +3,10 @@ import path from 'path';
 
 const CHAT_HELPERS_SCRIPT = path.join(process.cwd(), '../scripts/chat_helpers.py');
 
+// Use Cloud Run API or fallback to local Python spawn for development
+const API_URL = process.env.MOLECULEAI_API_URL || process.env.NEXT_PUBLIC_MOLECULEAI_API_URL || '';
+const USE_CLOUD_RUN = !!API_URL;
+
 // Helper to call OpenAI GPT-5.1 API directly (for server-side use)
 async function callOpenAIAPI(message: string, context?: Array<{ role: string; content: string }>, temperature: number = 0.7): Promise<string> {
     console.log('[callOpenAIAPI] Starting API call with message:', message.substring(0, 100));
@@ -34,7 +38,7 @@ Be concise, technically accurate, and helpful. When users ask for drug design, p
 
     // Build conversation input for GPT-5.1 Responses API
     let conversationInput = message;
-    
+
     // If we have context, prepend it to the input
     if (context && Array.isArray(context) && context.length > 0) {
         const contextText = context
@@ -56,7 +60,7 @@ Be concise, technically accurate, and helpful. When users ask for drug design, p
     const messages: Array<{ role: string; content: string }> = [
         { role: 'system', content: systemPrompt },
     ];
-    
+
     // Add context
     if (context && Array.isArray(context)) {
         context.forEach((msg: { role: string; content: string }) => {
@@ -65,13 +69,13 @@ Be concise, technically accurate, and helpful. When users ask for drug design, p
             }
         });
     }
-    
+
     // Add current message
     messages.push({ role: 'user', content: message });
-    
+
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 20000); // 20 second timeout
-    
+
     try {
         console.log('[callOpenAIAPI] Calling Chat Completions API with GPT-4o');
         const response = await fetch(
@@ -91,10 +95,10 @@ Be concise, technically accurate, and helpful. When users ask for drug design, p
                 signal: controller.signal,
             }
         );
-        
+
         clearTimeout(timeoutId);
         console.log('[callOpenAIAPI] API response status:', response.status, response.ok);
-        
+
         if (!response.ok) {
             const errorData = await response.text();
             let errorMessage = `OpenAI API error: ${response.status}`;
@@ -110,10 +114,10 @@ Be concise, technically accurate, and helpful. When users ask for drug design, p
 
         const data = await response.json();
         console.log('[callOpenAIAPI] Full API response:', JSON.stringify(data, null, 2));
-        
+
         // Chat Completions API format - extract text from choices
         let text = '';
-        
+
         if (data.choices && Array.isArray(data.choices) && data.choices.length > 0) {
             const choice = data.choices[0];
             if (choice.message?.content) {
@@ -124,7 +128,7 @@ Be concise, technically accurate, and helpful. When users ask for drug design, p
                 text = choice.delta.content;
             }
         }
-        
+
         // Fallback checks
         if (!text && data.output_text) {
             text = data.output_text;
@@ -138,7 +142,7 @@ Be concise, technically accurate, and helpful. When users ask for drug design, p
         if (!text && data.content) {
             text = data.content;
         }
-        
+
         // CRITICAL: Ensure we always return a string, never an object
         if (typeof text !== 'string') {
             console.error('[callOpenAIAPI] Response text is not a string! Type:', typeof text, 'Value:', text);
@@ -149,7 +153,7 @@ Be concise, technically accurate, and helpful. When users ask for drug design, p
             }
             text = '';
         }
-        
+
         if (!text || text.trim() === '') {
             console.error('[callOpenAIAPI] No text in OpenAI response. Full response:', JSON.stringify(data, null, 2));
             throw new Error('No response text from OpenAI API. Check API key, model availability, and quota. Response keys: ' + Object.keys(data).join(', '));
@@ -198,31 +202,70 @@ function generateSessionId(): string {
 }
 
 async function runPythonScript(command: string, smiles: string, topK?: number): Promise<any> {
+    // Use Cloud Run API if available
+    if (USE_CLOUD_RUN) {
+        try {
+            let endpoint = '';
+            let body: any = { smiles };
+
+            if (command === 'validate') {
+                endpoint = '/validate';
+            } else if (command === 'find_similar') {
+                endpoint = '/similar';
+                body.limit = topK || 5;
+            } else {
+                throw new Error(`Unknown command: ${command}`);
+            }
+
+            const response = await fetch(`${API_URL}${endpoint}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(body),
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json().catch(() => ({
+                    error: `HTTP ${response.status}: ${response.statusText}`
+                }));
+                throw new Error(errorData.detail || errorData.error || `HTTP ${response.status}`);
+            }
+
+            return await response.json();
+        } catch (error: any) {
+            console.error('Cloud Run API call failed:', error);
+            // If API fails, we could try fallback, but for now just throw
+            throw new Error(`Failed to run command ${command}: ${error.message}`);
+        }
+    }
+
+    // Fallback to local Python spawn (for local development)
     return new Promise((resolve, reject) => {
         const args = [command, smiles];
         if (topK !== undefined) {
             args.push(topK.toString());
         }
-        
+
         const pythonProcess = spawn('python3', [CHAT_HELPERS_SCRIPT, ...args]);
-        
+
         let outputData = '';
         let errorData = '';
-        
+
         pythonProcess.stdout.on('data', (data) => {
             outputData += data.toString();
         });
-        
+
         pythonProcess.stderr.on('data', (data) => {
             errorData += data.toString();
         });
-        
+
         pythonProcess.on('close', (code) => {
             if (code !== 0) {
                 reject(new Error(`Python script failed: ${errorData}`));
                 return;
             }
-            
+
             try {
                 const result = JSON.parse(outputData);
                 resolve(result);
@@ -273,26 +316,26 @@ CN1C=NC2=C1C(=O)N(C(=O)N2C)C
 CCO
 
 Now generate SMILES for: "${description}"`;
-        
+
         const text = await callOpenAIAPI(prompt, undefined, 0.7);
-        
+
         console.log('Raw OpenAI SMILES response:', text);
-        
+
         // Extract SMILES strings (one per line)
         const lines = text.split('\n');
         const smilesCandidates: string[] = [];
-        
+
         for (const line of lines) {
             const trimmed = line.trim();
             // Skip empty lines, comments, and lines that look like explanations
-            if (!trimmed || 
-                trimmed.startsWith('#') || 
+            if (!trimmed ||
+                trimmed.startsWith('#') ||
                 trimmed.toLowerCase().includes('smiles') ||
                 trimmed.match(/^\d+[\.\)]/) || // Skip numbered lists
                 trimmed.length < 2) {
                 continue;
             }
-            
+
             // Extract SMILES pattern (alphanumeric and chemical symbols)
             const smilesMatch = trimmed.match(/^([A-Za-z0-9@+\-\[\]()=#\.]+)/);
             if (smilesMatch) {
@@ -319,7 +362,7 @@ Now generate SMILES for: "${description}"`;
         if (validSmiles.length > 0) {
             return validSmiles;
         }
-        
+
         // If validation failed but we have candidates, return them anyway (validation might be too strict)
         if (uniqueSmiles.length > 0) {
             console.warn('Some SMILES failed validation, but returning them anyway:', uniqueSmiles);
@@ -340,7 +383,7 @@ function getFallbackSmiles(description: string): string[] {
     // Simple keyword-based fallback
     const lowerDesc = description.toLowerCase();
     const fallbacks: string[] = [];
-    
+
     if (lowerDesc.includes('aspirin') || lowerDesc.includes('pain')) {
         fallbacks.push('CC(=O)Oc1ccccc1C(=O)O');
     }
@@ -353,7 +396,7 @@ function getFallbackSmiles(description: string): string[] {
     if (lowerDesc.includes('benzene') || lowerDesc.includes('aromatic')) {
         fallbacks.push('c1ccccc1');
     }
-    
+
     return fallbacks.length > 0 ? fallbacks : ['CCO']; // Default to ethanol
 }
 
@@ -362,7 +405,7 @@ export async function processChatMessage(
     sessionId?: string
 ): Promise<ChatResponse> {
     console.log('[processChatMessage] Starting with message:', message);
-    
+
     // Get or create session
     let session = sessionId ? sessions.get(sessionId) : undefined;
     if (!session) {
@@ -382,10 +425,10 @@ export async function processChatMessage(
 
     // Check if message is just a SMILES string (simple pattern match) - very strict
     // Only match if it's a short string with no spaces and looks like pure SMILES
-    const isJustSmiles = /^[A-Za-z0-9@+\-\[\]()=#\.]+$/.test(message.trim()) 
-        && message.trim().length < 50 
+    const isJustSmiles = /^[A-Za-z0-9@+\-\[\]()=#\.]+$/.test(message.trim())
+        && message.trim().length < 50
         && message.trim().length > 2
-        && !message.includes(' ') 
+        && !message.includes(' ')
         && !message.includes('?')
         && !message.includes('!')
         && !lowerMessage.includes('generate')
@@ -393,14 +436,14 @@ export async function processChatMessage(
         && !lowerMessage.includes('design')
         && !lowerMessage.includes('find')
         && !lowerMessage.includes('similar');
-    
+
     // Always use OpenAI for most conversations, only use special handlers for very specific cases
     // Detect specific intents (but be more careful - only for very clear cases)
-    const wantsGenerate = (lowerMessage.includes('generate') || lowerMessage.includes('create') || lowerMessage.includes('design')) 
+    const wantsGenerate = (lowerMessage.includes('generate') || lowerMessage.includes('create') || lowerMessage.includes('design'))
         && (lowerMessage.includes('molecule') || lowerMessage.includes('compound') || lowerMessage.includes('drug') || lowerMessage.includes('for'))
         && !lowerMessage.includes('?') && !lowerMessage.includes('how') && !lowerMessage.includes('what'); // Don't match questions
-    
-    const wantsSimilar = (lowerMessage.includes('similar') || lowerMessage.includes('find') || lowerMessage.includes('search')) 
+
+    const wantsSimilar = (lowerMessage.includes('similar') || lowerMessage.includes('find') || lowerMessage.includes('search'))
         && (lowerMessage.includes('molecule') || lowerMessage.includes('like') || lowerMessage.includes('to'))
         && !lowerMessage.includes('?') && !lowerMessage.includes('how') && !lowerMessage.includes('what'); // Don't match questions
 
@@ -415,7 +458,7 @@ export async function processChatMessage(
         try {
             const suggestedSmiles = await generateSmilesFromDescription(message);
             response.suggestedSmiles = suggestedSmiles;
-            
+
             // Get AI response to explain the molecules
             if (suggestedSmiles.length > 0) {
                 try {
@@ -449,12 +492,12 @@ export async function processChatMessage(
         // Extract SMILES from message or use last analyzed molecule
         const smilesMatch = message.match(/[A-Za-z0-9@+\-\[\]()=#]+/);
         const smiles = smilesMatch ? smilesMatch[0] : (session.analyzedMolecules?.[session.analyzedMolecules.length - 1]);
-        
+
         if (smiles) {
             try {
                 const similar = await findSimilarMolecules(smiles, 5);
                 response.similarMolecules = similar;
-                
+
                 // Get AI response to explain the results
                 try {
                     const aiText = await callOpenAIAPI(
