@@ -179,6 +179,8 @@ def get_ai_market_analysis(smiles):
             
         client = OpenAI(api_key=api_key)
         
+        print(f"Attempting AI market analysis for {smiles}...", file=sys.stderr)
+        
         prompt = f"""
         Analyze the market potential, competitors, and patents for the molecule with SMILES: {smiles}
         
@@ -227,6 +229,7 @@ def get_ai_market_analysis(smiles):
         )
         
         content = response.choices[0].message.content
+        print(f"AI analysis successful", file=sys.stderr)
         return json.loads(content)
         
     except Exception as e:
@@ -333,7 +336,11 @@ def get_market_analysis(smiles, molecule_name=None):
             
         # AI Fallback/Enhancement
         # If we have missing data, try to get it from AI
-        if not competitors or not patents:
+        # Force AI analysis if we have fewer than 3 competitors or no patents
+        should_run_ai = len(competitors) < 3 or not patents
+        print(f"Checking if AI analysis needed: competitors={len(competitors)}, patents={len(patents)}, run={should_run_ai}", file=sys.stderr)
+        
+        if should_run_ai:
             ai_data = get_ai_market_analysis(smiles)
             if ai_data:
                 if not competitors and "competitors" in ai_data:
