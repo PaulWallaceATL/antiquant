@@ -656,7 +656,7 @@ export default function Home() {
                             </td>
                             <td className="px-4 sm:px-6 py-3 text-right text-xs sm:text-sm">
                               <div className="flex flex-wrap gap-1 justify-end">
-                                {displayData.features.synonyms.slice(0, 5).map((syn, idx) => (
+                                {displayData.features.synonyms.slice(0, 5).map((syn: string, idx: number) => (
                                   <span key={idx} className="px-2 py-0.5 bg-gray-100 dark:bg-gray-800 rounded text-[10px] sm:text-xs">
                                     {syn}
                                   </span>
