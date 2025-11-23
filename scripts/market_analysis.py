@@ -177,9 +177,19 @@ def get_ai_market_analysis(smiles):
         if not api_key:
             return None
             
-        client = OpenAI(api_key=api_key)
+        # Support custom base URL and model
+        base_url = os.environ.get("OPENAI_BASE_URL") or os.environ.get("OPENAI_API_BASE")
+        model = os.environ.get("OPENAI_MODEL", "gpt-4o")
         
-        print(f"Attempting AI market analysis for {smiles}...", file=sys.stderr)
+        client_kwargs = {"api_key": api_key}
+        if base_url:
+            client_kwargs["base_url"] = base_url
+            
+        client = OpenAI(**client_kwargs)
+        
+        print(f"Attempting AI market analysis for {smiles} using model {model}...", file=sys.stderr)
+        if base_url:
+            print(f"Using custom OpenAI endpoint: {base_url}", file=sys.stderr)
         
         prompt = f"""
         Analyze the market potential, competitors, and patents for the molecule with SMILES: {smiles}
@@ -220,7 +230,7 @@ def get_ai_market_analysis(smiles):
         """
         
         response = client.chat.completions.create(
-            model="gpt-4o",
+            model=model,
             messages=[
                 {"role": "system", "content": "You are a pharmaceutical market analyst expert."},
                 {"role": "user", "content": prompt}
