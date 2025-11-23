@@ -257,60 +257,65 @@ export default function Home() {
       </header>
 
       {/* Main Content - Mobile Responsive */}
-      <div className="min-h-[calc(100vh-73px)] lg:h-[calc(100vh-73px)] flex flex-col lg:grid lg:grid-cols-5 gap-4 p-3 sm:p-4">
-        {/* Left Panel - Input */}
-        <div className="lg:col-span-1 space-y-3 sm:space-y-4 overflow-y-auto max-h-[40vh] lg:max-h-none lg:min-h-0">
-          <Card className="border-2 border-blue-100 dark:border-blue-900/50">
-            <div className="bg-gradient-to-r from-blue-500 to-purple-600 px-3 py-2">
-              <span className="text-xs font-semibold flex items-center gap-2 text-white">
-                <Beaker className="w-4 h-4" /> SMILES Input
-                <InfoTooltip title={TOOLTIPS.smiles.title} content={TOOLTIPS.smiles.content} className="text-white/80 hover:text-white" />
-              </span>
-            </div>
-            <div className="p-3">
-              <textarea
-                value={smiles}
-                onChange={(e) => setSmiles(e.target.value)}
-                className="w-full h-24 sm:h-32 bg-gray-50 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg p-2 sm:p-3 font-mono text-xs sm:text-sm focus:ring-2 focus:ring-blue-500 outline-none resize-none touch-manipulation"
-                placeholder="Enter SMILES notation..."
-                aria-label="SMILES input"
-              />
-            </div>
-          </Card>
+      <div className="min-h-[calc(100vh-73px)] lg:h-[calc(100vh-73px)] flex flex-col lg:grid lg:grid-cols-5 gap-2 sm:gap-4 p-2 sm:p-4">
+        {/* Left Panel - Input - Mobile Optimized */}
+        <div className="lg:col-span-1 flex flex-col lg:block lg:space-y-3 sm:lg:space-y-4 lg:overflow-y-auto lg:max-h-none">
+          {/* Mobile: Sticky Input Section */}
+          <div className="lg:static sticky top-[73px] z-30 bg-white dark:bg-gray-900 lg:bg-transparent lg:dark:bg-transparent pb-2 lg:pb-0 border-b border-gray-200 dark:border-gray-800 lg:border-0 mb-2 lg:mb-0 space-y-2 lg:space-y-3 sm:lg:space-y-4">
+            <Card className="border-2 border-blue-100 dark:border-blue-900/50 lg:shadow-sm">
+              <div className="bg-gradient-to-r from-blue-500 to-purple-600 px-2 sm:px-3 py-1.5 sm:py-2">
+                <span className="text-[10px] sm:text-xs font-semibold flex items-center gap-1.5 sm:gap-2 text-white">
+                  <Beaker className="w-3.5 h-3.5 sm:w-4 sm:h-4" /> SMILES Input
+                  <InfoTooltip title={TOOLTIPS.smiles.title} content={TOOLTIPS.smiles.content} className="text-white/80 hover:text-white" />
+                </span>
+              </div>
+              <div className="p-2 sm:p-3">
+                <textarea
+                  value={smiles}
+                  onChange={(e) => setSmiles(e.target.value)}
+                  className="w-full h-20 sm:h-24 lg:h-32 bg-gray-50 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg p-2 sm:p-3 font-mono text-[11px] sm:text-xs lg:text-sm focus:ring-2 focus:ring-blue-500 outline-none resize-none touch-manipulation"
+                  placeholder="Enter SMILES..."
+                  aria-label="SMILES input"
+                />
+              </div>
+            </Card>
 
-          <Card className="p-3">
-            <h3 className="text-xs font-semibold mb-2 text-gray-700 dark:text-gray-300">Examples</h3>
-            <div className="space-y-2">
-              {exampleMolecules.map((mol) => (
-                <button
-                  key={mol.smiles}
-                  onClick={() => setSmiles(mol.smiles)}
-                  className="w-full px-3 py-2.5 sm:py-2 bg-gray-100 dark:bg-gray-800 hover:bg-blue-100 dark:hover:bg-blue-900/30 active:bg-blue-200 dark:active:bg-blue-900/50 rounded text-xs text-left transition-colors touch-manipulation min-h-[44px]"
-                  aria-label={`Load ${mol.name} example`}
-                >
-                  <div className="font-medium">{mol.name}</div>
-                  <div className="text-[10px] sm:text-[10px] text-gray-500 dark:text-gray-400 font-mono truncate">{mol.smiles}</div>
-                </button>
-              ))}
-            </div>
-          </Card>
+            {/* Mobile: Horizontal Scrollable Examples */}
+            <Card className="p-2 sm:p-3 lg:shadow-sm">
+              <h3 className="text-[10px] sm:text-xs font-semibold mb-1.5 sm:mb-2 text-gray-700 dark:text-gray-300">Examples</h3>
+              {/* Mobile: Horizontal scroll, Desktop: Vertical stack */}
+              <div className="flex lg:flex-col gap-2 lg:space-y-2 overflow-x-auto lg:overflow-x-visible pb-1 lg:pb-0 -mx-2 lg:mx-0 px-2 lg:px-0 snap-x lg:snap-none scrollbar-hide">
+                {exampleMolecules.map((mol) => (
+                  <button
+                    key={mol.smiles}
+                    onClick={() => setSmiles(mol.smiles)}
+                    className="flex-shrink-0 lg:w-full px-2.5 sm:px-3 py-2 sm:py-2.5 lg:py-2 bg-gray-100 dark:bg-gray-800 hover:bg-blue-100 dark:hover:bg-blue-900/30 active:bg-blue-200 dark:active:bg-blue-900/50 rounded text-[10px] sm:text-xs text-left transition-colors touch-manipulation min-h-[40px] sm:min-h-[44px] snap-start lg:snap-none"
+                    aria-label={`Load ${mol.name} example`}
+                  >
+                    <div className="font-medium truncate">{mol.name}</div>
+                    <div className="text-[9px] sm:text-[10px] text-gray-500 dark:text-gray-400 font-mono truncate max-w-[140px] sm:max-w-none">{mol.smiles}</div>
+                  </button>
+                ))}
+              </div>
+            </Card>
 
-          <Button
-            onClick={analyze}
-            disabled={loading || !smiles}
-            className={`w-full py-3 sm:py-3 text-sm sm:text-sm min-h-[48px] ${mode === 'compare' ? 'bg-gradient-to-r from-blue-600 to-purple-600' : mode === 'quantum' ? 'bg-purple-600 hover:bg-purple-700' : ''}`}
-            aria-label={loading ? 'Analyzing molecule...' : 'Analyze molecule'}
-          >
-            {loading ? (
-              <>
-                <Activity className="w-4 h-4 animate-spin" /> Analyzing...
-              </>
-            ) : (
-              <>
-                <Play className="w-4 h-4" /> {mode === 'compare' ? 'Compare Models' : 'Predict'}
-              </>
-            )}
-          </Button>
+            <Button
+              onClick={analyze}
+              disabled={loading || !smiles}
+              className={`w-full py-2.5 sm:py-3 lg:py-3 text-xs sm:text-sm min-h-[44px] sm:min-h-[48px] ${mode === 'compare' ? 'bg-gradient-to-r from-blue-600 to-purple-600' : mode === 'quantum' ? 'bg-purple-600 hover:bg-purple-700' : ''}`}
+              aria-label={loading ? 'Analyzing molecule...' : 'Analyze molecule'}
+            >
+              {loading ? (
+                <>
+                  <Activity className="w-3.5 h-3.5 sm:w-4 sm:h-4 animate-spin" /> <span className="text-xs sm:text-sm">Analyzing...</span>
+                </>
+              ) : (
+                <>
+                  <Play className="w-3.5 h-3.5 sm:w-4 sm:h-4" /> <span className="text-xs sm:text-sm">{mode === 'compare' ? 'Compare' : 'Predict'}</span>
+                </>
+              )}
+            </Button>
+          </div>
         </div>
 
         {/* Right Panel - Results */}
