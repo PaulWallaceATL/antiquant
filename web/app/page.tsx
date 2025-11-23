@@ -54,7 +54,7 @@ export default function Home() {
   const [smiles, setSmiles] = useState<string>('CCO');
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<any>(null);
-  const [mode, setMode] = useState<'classical' | 'quantum' | 'compare'>('compare');
+  const [mode, setMode] = useState<'classical' | 'quantum' | 'compare'>('quantum');
 
 
   const [activeTab, setActiveTab] = useState<'druglikeness' | '3d' | 'overview' | 'circuit' | 'details' | 'editor' | 'chat' | 'market'>('druglikeness');
@@ -164,32 +164,11 @@ export default function Home() {
             {/* Desktop Buttons */}
             <div className="hidden lg:flex gap-2 flex-wrap">
               <Button
-                variant={mode === 'classical' ? 'primary' : 'secondary'}
-                onClick={() => setMode('classical')}
-                className="text-xs sm:text-sm"
-              >
-                <Layers className="w-4 h-4" /> <span className="hidden sm:inline">Classical</span>
-              </Button>
-              <Button
                 variant={mode === 'quantum' ? 'primary' : 'secondary'}
                 onClick={() => setMode('quantum')}
                 className={`text-xs sm:text-sm ${mode === 'quantum' ? 'bg-purple-600 hover:bg-purple-700 text-white shadow-lg shadow-purple-500/50' : ''}`}
               >
                 <Atom className="w-4 h-4" /> <span className="hidden sm:inline">Quantum</span>
-              </Button>
-              <Button
-                variant={mode === 'compare' ? 'compare' : 'secondary'}
-                onClick={() => setMode('compare')}
-                className="text-xs sm:text-sm"
-              >
-                <GitCompare className="w-4 h-4" /> <span className="hidden sm:inline">Compare</span>
-              </Button>
-              <Button
-                variant={activeTab === 'editor' ? 'primary' : 'secondary'}
-                onClick={() => { setActiveTab('editor'); setMobileMenuOpen(false); }}
-                className="text-xs sm:text-sm"
-              >
-                <Beaker className="w-4 h-4" /> <span className="hidden xl:inline">Editor</span>
               </Button>
               {result && !result.error && (
                 <ExportButton analysis={result} />
@@ -209,34 +188,11 @@ export default function Home() {
             <div className="lg:hidden mt-4 pt-4 border-t border-gray-200 dark:border-gray-800 space-y-2">
               <div className="grid grid-cols-3 gap-2">
                 <Button
-                  variant={mode === 'classical' ? 'primary' : 'secondary'}
-                  onClick={() => { setMode('classical'); setMobileMenuOpen(false); }}
-                  className="text-xs py-2"
-                >
-                  <Layers className="w-4 h-4" /> Classical
-                </Button>
-                <Button
                   variant={mode === 'quantum' ? 'primary' : 'secondary'}
                   onClick={() => { setMode('quantum'); setMobileMenuOpen(false); }}
                   className={`text-xs py-2 ${mode === 'quantum' ? 'bg-purple-600 hover:bg-purple-700 text-white' : ''}`}
                 >
                   <Atom className="w-4 h-4" /> Quantum
-                </Button>
-                <Button
-                  variant={mode === 'compare' ? 'compare' : 'secondary'}
-                  onClick={() => { setMode('compare'); setMobileMenuOpen(false); }}
-                  className="text-xs py-2"
-                >
-                  <GitCompare className="w-4 h-4" /> Compare
-                </Button>
-              </div>
-              <div className="grid grid-cols-3 gap-2">
-                <Button
-                  variant={activeTab === 'editor' ? 'primary' : 'secondary'}
-                  onClick={() => { setActiveTab('editor'); setMobileMenuOpen(false); }}
-                  className="text-xs py-2"
-                >
-                  <Beaker className="w-4 h-4" /> Editor
                 </Button>
                 {result && !result.error && (
                   <div className="col-span-1">
