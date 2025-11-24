@@ -192,7 +192,10 @@ def get_ai_market_analysis(smiles):
             print(f"Using custom OpenAI endpoint: {base_url}", file=sys.stderr)
         
         prompt = f"""
-        Analyze the market potential, competitors, and patents for the molecule with SMILES: {smiles}
+        Perform a comprehensive market analysis and REAL-WORLD patent search for the molecule with SMILES: {smiles}
+        
+        You MUST provide actual, existing patents if available, or highly relevant patent classes/examples if the specific molecule is novel.
+        Do NOT generate generic placeholders. Search your knowledge base for real pharmaceutical patents related to this structure or its close analogs.
         
         Provide the output in the following JSON format:
         {{
@@ -209,7 +212,7 @@ def get_ai_market_analysis(smiles):
             "patents": [
                 {{
                     "patentNumber": "US1234567",
-                    "title": "Patent Title",
+                    "title": "Actual Patent Title",
                     "filingDate": "YYYY-MM-DD",
                     "status": "Active/Expired",
                     "assignee": "Company Name",
@@ -226,7 +229,7 @@ def get_ai_market_analysis(smiles):
             "regulatoryStatus": "Favorable/Moderate/Challenging"
         }}
         
-        Ensure the data is realistic and relevant to the molecule's structure and likely therapeutic use.
+        Ensure the data is realistic, specific, and based on actual market research knowledge.
         """
         
         response = client.chat.completions.create(
@@ -345,35 +348,53 @@ def get_market_analysis(smiles, molecule_name=None):
             regulatory_status = "Challenging - Significant optimization required"
             
         # AI Fallback/Enhancement
-        # If we have missing data, try to get it from AI
-        # Force AI analysis if we have fewer than 3 competitors or no patents
-        should_run_ai = len(competitors) < 3 or not patents
-        print(f"Checking if AI analysis needed: competitors={len(competitors)}, patents={len(patents)}, run={should_run_ai}", file=sys.stderr)
+        # ALWAYS run AI analysis to get the best possible data
+        print(f"Running AI market analysis for {smiles}...", file=sys.stderr)
+        ai_data = get_ai_market_analysis(smiles)
         
-        if should_run_ai:
-            ai_data = get_ai_market_analysis(smiles)
-            if ai_data:
-                if not competitors and "competitors" in ai_data:
-                    competitors = ai_data["competitors"]
-                    for comp in competitors:
-                        comp["source"] = "AI Analysis"
-                        
-                if not patents and "patents" in ai_data:
-                    patents = ai_data["patents"]
-                    for pat in patents:
-                        pat["source"] = "AI Analysis"
-                        
-                if "marketSize" in ai_data:
-                    market_info_ai = ai_data["marketSize"]
-                    therapeutic_area = market_info_ai.get("therapeuticArea", therapeutic_area)
-                    market_info = {
-                        "size": market_info_ai.get("estimatedMarketSize", market_info["size"]),
-                        "growth": market_info_ai.get("growthRate", market_info["growth"])
-                    }
+        if ai_data:
+            # Prioritize AI competitors if available, or merge them
+            if "competitors" in ai_data and ai_data["competitors"]:
+                ai_competitors = ai_data["competitors"]
+                for comp in ai_competitors:
+                    comp["source"] = "AI Market Research"
+                # If we have few real competitors, use AI ones
+                if len(competitors) < 3:
+                    competitors.extend(ai_competitors)
+                    # Deduplicate based on name
+                    seen_names = set()
+                    unique_competitors = []
+                    for c in competitors:
+                        if c["name"] not in seen_names:
+                            seen_names.add(c["name"])
+                            unique_competitors.append(c)
+                    competitors = unique_competitors[:5]
+                    
+            # Prioritize AI patents (usually better than PubChem for context)
+            if "patents" in ai_data and ai_data["patents"]:
+                ai_patents = ai_data["patents"]
+                for pat in ai_patents:
+                    pat["source"] = "AI Patent Search"
+                # Prepend AI patents
+                patents = ai_patents + patents
+                patents = patents[:5]
+                    
+            # Always use AI market size if available
+            if "marketSize" in ai_data:
+                market_info_ai = ai_data["marketSize"]
+                therapeutic_area = market_info_ai.get("therapeuticArea", therapeutic_area)
+                market_info = {
+                    "size": market_info_ai.get("estimatedMarketSize", market_info["size"]),
+                    "growth": market_info_ai.get("growthRate", market_info["growth"])
+                }
+                
+            # Use AI regulatory status if available
+            if "regulatoryStatus" in ai_data:
+                regulatory_status = ai_data["regulatoryStatus"]
         
         return {
             "competitors": competitors,
-            "patents": patents[:3] if patents else [],
+            "patents": patents,
             "marketSize": {
                 "therapeuticArea": therapeutic_area,
                 "estimatedMarketSize": market_info["size"],
@@ -382,7 +403,7 @@ def get_market_analysis(smiles, molecule_name=None):
                 "growthRate": market_info["growth"]
             },
             "regulatoryStatus": regulatory_status,
-            "dataSource": "PubChem, ChEMBL, AI Analysis"
+            "dataSource": "PubChem, ChEMBL, AI Market Research"
         }
         
     except Exception as e:
