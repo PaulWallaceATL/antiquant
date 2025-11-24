@@ -179,7 +179,8 @@ def get_ai_market_analysis(smiles):
             
         # Support custom base URL and model
         base_url = os.environ.get("OPENAI_BASE_URL") or os.environ.get("OPENAI_API_BASE")
-        model = os.environ.get("OPENAI_MODEL", "gpt-4o")
+        # Default to gpt-5.1 as requested by user
+        model = os.environ.get("OPENAI_MODEL", "gpt-5.1")
         
         client_kwargs = {"api_key": api_key}
         if base_url:
@@ -243,11 +244,18 @@ def get_ai_market_analysis(smiles):
         
         content = response.choices[0].message.content
         print(f"AI analysis successful", file=sys.stderr)
-        return json.loads(content)
+        result = json.loads(content)
+        # Add debug info to result
+        result["_debug_info"] = {
+            "model": model,
+            "base_url": base_url or "default"
+        }
+        return result
         
     except Exception as e:
         print(f"AI market analysis error: {e}", file=sys.stderr)
-        return None
+        # Return error object instead of None to surface it
+        return {"error": str(e), "_debug_info": {"model": model if 'model' in locals() else "unknown"}}
 
 def get_therapeutic_area_from_pubchem(smiles):
     """Try to determine therapeutic area from PubChem bioactivity data"""
@@ -352,7 +360,19 @@ def get_market_analysis(smiles, molecule_name=None):
         print(f"Running AI market analysis for {smiles}...", file=sys.stderr)
         ai_data = get_ai_market_analysis(smiles)
         
+        ai_error = None
+        ai_source_info = "AI Market Research"
+        
         if ai_data:
+            if "error" in ai_data:
+                ai_error = ai_data["error"]
+                print(f"AI Analysis returned error: {ai_error}", file=sys.stderr)
+                ai_source_info = f"AI Failed: {ai_error}"
+            
+            if "_debug_info" in ai_data:
+                debug = ai_data["_debug_info"]
+                ai_source_info += f" ({debug.get('model')} via {debug.get('base_url')})"
+            
             # Prioritize AI competitors if available, or merge them
             if "competitors" in ai_data and ai_data["competitors"]:
                 ai_competitors = ai_data["competitors"]
@@ -403,7 +423,7 @@ def get_market_analysis(smiles, molecule_name=None):
                 "growthRate": market_info["growth"]
             },
             "regulatoryStatus": regulatory_status,
-            "dataSource": "PubChem, ChEMBL, AI Market Research"
+            "dataSource": f"PubChem, ChEMBL, {ai_source_info}"
         }
         
     except Exception as e:
